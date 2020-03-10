@@ -1,34 +1,338 @@
 ---
-title: Installing and Configuring YOUR-PRODUCT-NAME
-owner: Partners
+title: Installing and Configuring Developer Connect
+owner: DevConnect
 ---
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to install and configure YOUR-PRODUCT-NAME.
+This topic describes how to install and configure <%= vars.product_full %>.
 
-##<a id='install'></a> Install and Configure YOUR-PRODUCT-NAME
+##<a id='install'></a> Install and Configure <%= vars.product_full %>
 
-To install the YOUR-PRODUCT-NAME file on the Ops Manager Installation Dashboard, do the following:
+# Configuring DevConnect
 
-1. Download the product file from Pivotal Network.
+## Prerequisites
+- [UAAC](https://github.com/cloudfoundry/cf-uaac) (UAA Command Line Client) installed
+- A uuid string generated for each foundation to be configured
+  - this can be an arbitrary UUID, it will just need to be consistent throughout the configuration
+  - you can use a tool such as [`uuidgen`](http://man7.org/linux/man-pages/man1/uuidgen.1.html) to generate random UUIDs
+  - this will correspond to the value `<foundation-uuid>` used later
+- The route that will be used to access the DevConnect server
+  - this will correspond to the value `<route-to-devconnect>` used later
+- One or more running PCF foundations
+- A SQL Database
 
-1. Navigate to the Ops Manager Installation Dashboard and click **Import a Product** to upload the product file.
+## Configuring DevConnect with an IDP
 
-1. Under **Import a Product**, click **+** next to the version number of YOUR-PRODUCT-NAME.
-This adds the tile to your staging area.
+DevConnect requires an OIDC OAuth2 provider (known as DevConnect IDP)
 
-1. Click the newly added **YOUR-PRODUCT-NAME** tile.
+Users of DevConnect need a user on the DevConnect IDP and have users on each foundation's UAA with the same username/email.
 
-1. **This portion of the procedure should tell the users how to configure the newly added tile by
-walking them through the sections. Which fields should they fill out? What are the different
-checkboxes? Include relevant screenshots here.**
+For convenience we recommend configuring your DevConnect IDP and all the PCF UAAs to be backed by one SAML or LDAP IDP. This reduces some administrative overhead and allows for a faster and less cumbersome login experience for the DevConnect user.
 
-1. Click **Save**.
+Examples of a DevConnect IDP can be:
+- A [Pivotal SSO Service](https://network.pivotal.io/products/pivotal_single_sign-on_service/) instance
+- A UAA instance on an existing PCF installation
+- A standalone UAA instance
 
-1. Return to the Ops Manager Installation Dashboard and click **Apply changes** to install YOUR-PRODUCT-NAME tile.
+<!--
+Right now this documentation assumes that you've setup a UAA or the Pivotal SSO service to work with DevConnect.
+https://www.pivotaltracker.com/story/show/168939821 asks us to document:
+  * Test and document using an existing foundation UAA
+  * Add section or another page on setting up SAML IDP
+  * Add section for configuring Pivotal SSO Service
+-->
 
-**If needed, include additional configuration information below. For example, maybe there are
-configuration options not required for installation but which could be useful for certain users. Typical topics include:**
-1. **Self-service**--Do you have recommendations on how to configure/design plans in the tile so that users can choose the best options for themselves?
-1. **High availability**--How do you configure/deploy X Service tile to be highly available?
+### An example of configuring DevConnect's IDP using UAA
+
+The following instructions apply to both methods:
+
+1. Register a client with:
+    - authorization code grant type, with `openid,profile` scopes
+    - redirect URL in the form `https://<route-to-devconnect>/oauth2`.
+1. To do this using the uaac CLI, perform:
+
+    ```
+    $ uaac client add --name devconnect_login_client --scope openid,profile --authorized_grant_types authorization_code --redirect_uri https://<route-to-devconnect>/oauth2`
+    ```
+
+1. Note the Client ID (name) which by default is "devconnect_login_client", and Client Secret, which you will be prompted to enter.
+   They will correspond the values `<devconnect-auth-client-id>` and `<devconnect-auth-client-secret>` respectively, used later.
+
+1. Note the authorization base URL of the UAA or SSO instance. The base URL is the host that provides the well-known openid configuration.
+   It is usually in the form `https://uaa.sys.<foundation host>`. The base URL will correspond to value `<devconnect-auth-base-url>` used later.
+   It can be verified by querying `https://<devconnect-auth-base-url>/.well-known/openid-configuration`.
+
+## Configuring Foundation UAA(s)
+
+For each foundation, assign a generated UUID. This will be the basis of identifying the foundation, and will correspond
+to value `<foundation-uuid>` used later.  Perform the follow steps for each foundation that you want to add to DevConnect.
+
+Adding a foundation to DevConnect requires the following clients to be configured on the foundation UAA:
+
+- A Client with Client Credentials Grant Type with `cloud_controller.admin` authority, which DevConnect will use to:
+    - Fetch Org Quotas
+    - Create Orgs
+    - Create Spaces
+    - Assign Org Roles
+    - Assign Space Roles
+
+- A Client with Authorization Code Grant Type, which will be used to verify that a user exists and has
+the correct scopes in the foundation UAA (and create a user in the UAA if user does not exist yet)
+
+### Configuring DevConnect Admin Client Credential
+
+DevConnect will need an admin client credentials to create orgs and spaces for each foundation's UAA.
+
+1. Register a client with client credentials grant type, with `cloud_controller.admin` authority
+1. To do this using the uaac CLI, perform:
+
+   ```
+   $ uaac client add --name devconnect_admin_client --authorized_grant_types client_credentials --authorities cloud_controller.admin
+   ```
+
+1. Note the Client ID (name) which by default is "devconnect_admin_client", and Client Secret, which you will be prompted to enter.
+   They will correspond to the values `<devconnect-foundation-admin-client-id>` and `<devconnect-foundation-admin-client-secret>` respectively, used later.
+
+### Configuring DevConnect Authorization Code Client Credentials for User Authentication
+
+DevConnect needs to authenticate it's users through it's IDP.
+
+1. Register a client with authorization code grant type, with `openid` scope
+1. The redirect url will be in the form `https://<route-to-devconnect>/api/v1/foundations/<foundation-uuid>/oauth2`
+
+1. To do this using the uaac CLI, perform:
+
+    ```
+    $ uaac client add --name devconnect_foundation_auth_client --scope openid --authorized_grant_types authorization_code \
+        --redirect_uri https://<route-to-devconnect>/api/v1/foundations/<foundation-uuid>/oauth2
+    ```
+
+1. Note the Client ID (name) which by default is "devconnect_foundation_auth_client", and Client Secret, which you will be prompted to enter.
+   They will correspond to the values `<devconnect-foundation-auth-client-id>` and `<devconnect-foundation-auth-client-secret>` respectively, used later.
+
+# Running DevConnect
+
+## Running DevConnect on Kubernetes
+
+See [Kubernetes-Deployment/README.MD](../../kubernetes-deployment/README.md)
+
+## Prerequisites
+ - a PCF foundation running Pivotal Application Service with binary buildpack installed
+
+### Manifest
+
+<!-- The following is our speculation on how Alana will deploy DevConnect.
+It should be updated after this story, https://www.pivotaltracker.com/story/show/168938874 to reflect how to actually deploy the packaged DevConnect.  -->
+
+Create a manifest called `devconnect-manifest.yml`, with the following contents as-is:
+
+```
+# This is the application manifest used to cf push DevConnect
+---
+applications:
+  - name: devconnect
+    memory: 1G
+    instances: 1
+    routes:
+    - route: ((devconnect-route))
+    path: ./
+    buildpacks: [ binary_buildpack ]
+    command: ./devconnect-linux
+    env:
+      DEVCONNECTL_AUTH_CLIENT_ID: ((devconnect-auth-client-id))
+      DEVCONNECTL_AUTH_CLIENT_SECRET: ((devconnect-auth-client-secret))
+      DEVCONNECTL_AUTH_BASE_URL: ((devconnect-auth-base-url))
+      DEVCONNECTL_SESSION_SECRET: ((session-secret))
+      DEVCONNECTL_DB_TYPE: ((db-type))
+      DEVCONNECTL_DB_HOST: ((db-host))
+      DEVCONNECTL_DB_PORT: ((db-port))
+      DEVCONNECTL_DB_USER_NAME: ((db-username))
+      DEVCONNECTL_DB_NAME: ((db-name))
+      DEVCONNECTL_DB_PASSWORD: ((db-password))
+      DEVCONNECTL_DB_MAX_CONNECTIONS: ((db-max-connections))
+      DEVCONNECTL_ENTITLEMENTS_CONFIG_STRING: ((devconnect-entitlements-config))
+```
+
+### Populating configuration vars file
+
+Create a file called `devconnect-vars.yml`, which will hold variable interpolation values, substituting placeholders wrapped in `<>`.
+Some values were noted above in the configuration steps, while the remainder are noted below.
+
+```
+# This is the vars file used to populate variable values
+---
+devconnect-route: <route-to-devconnect>
+devconnect-auth-client-id: <devconnect-auth-client-id>
+devconnect-auth-client-secret: <devconnect-auth-client-secret>
+devconnect-auth-base-url: <devconnect-auth-base-url>
+session-secret: <devconnect-session-secret>
+db-type: <db-type>
+db-host: <your-sql-db-host>
+db-port: <your-sql-db-port>
+db-username: <your-sql-db-username>
+db-name: <your-sql-db-name>
+db-password: <your-sql-db-password>
+db-max-connections: <your-selected-max-connections>
+devconnect-entitlements-config: |
+    orgNameTemplate: '{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}-{{EnvironmentName}}'
+    spaceNameTemplate: '{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}'
+    customTemplateVariables:
+    - variableName: CostCenter
+      displayName: Cost Center
+      displayText: Please enter your Cost Center
+      characterLimit: 10
+    foundations:
+    - name: "<foundation-name>"
+      uuid: "<foundation-uuid>"
+      region: "<foundation-region>"
+      apiUrl: "<foundation-cf-api-url>"
+      admin:
+         clientId: "<devconnect-foundation-admin-client-id>"
+         clientSecret: "<devconnect-foundation-admin-client-secret>"
+      tutorialEnvironment:
+         name: sandbox
+         orgRole: auditors
+         spaceRole: developers
+         quotaName: sandbox
+      environments:
+      - name: dev
+        orgRole: auditors
+        spaceRole: developers
+      - name: prod
+        orgRole: auditors
+        spaceRole: auditors
+      oauth:
+        authorizeUrl: https://login.sys.<foundation host>/oauth/authorize
+        tokenUrl: https://login.sys.<foundation host>/oauth/token
+        clientId: <devconnect-foundation-auth-client-id>
+        clientSecret: <devconnect-foundation-auth-client-secret>
+        issuerUrl: https://uaa.sys.<foundation host>/oauth/token
+        jwksUrl: https://login.sys.<foundation host>/token_keys
+        authenticationType: saml
+```
+
+Notes on values:
+
+| Key                           | Placeholder                       | Description|
+| -----                         | ---------                         | -----------|
+| devconnect-route               | `<route-to-devconnect>`            | A route to where you plan to run DevConnect (e.g. devconnect.<your foundation's apps domain>, some-hostname-you-configured.com) |
+| devconnect-auth-client-id      | `<devconnect-auth-client-id>`      | The client created when creating the DevConnect Admin Client Credential. |
+| devconnect-auth-client-secret  | `<devconnect-auth-client-secret>`  | The secret created when creating the DevConnect Admin Client Credential. |
+| devconnect-auth-base-url       | `<devconnect-auth-base-url>`       | The authorization base URL of the DevConnect IDP |
+| session-secret                | `<devconnect-session-secret>`      | Arbitrary string used to encrypt session cookies|
+|db-type|`<db-type>`|DevConnect supports two types of SQL database: `mysql` and `postgres`|
+| db-host                       | `<your-sql-db-host>`         | sql database host |
+| db-port                       | `<your-sql-db-port>`         | sql database port |
+| db-username                   | `<your-sql-db-username>`     | sql database username|
+| db-name                       | `<your-sql-db-name>`         | sql database name|
+| db-password                   | `<your-sql-db-password>`     | sql database password|
+| db-max-connections            | `<your-selected-max-connections>` | Maximum number of connections that DevConnect creates to the database. Should be set lower than the maximum number of concurrent connections the database allows. Default is 3. |
+| devconnect-entitlements-config | | YAML object of configurations for each foundation. See entitlements config section below.|
+
+#### DevConnect Entitlements Config
+
+The `devconnect-entitlements-config` is a YAML object that stores additional devconnect configuration information with three types of values:
+* org and space name template configuration such as `orgNameTemplate` and `spaceNameTemplate`
+* customTemplateVariables can be added to be used with `orgNameTemplate` and `spaceNameTemplate`
+* foundation configuration stored in `foundations`
+
+##### Org and Space Name Template Configuration
+
+DevConnect requires a template to be configured for org and space names in the values `orgNameTemplate` and `spaceNameTemplate`. Use the delimiters `{}` to specify different fields. The fields are described below:
+
+|Field|Placeholder|Description|
+|---|---|---|
+| orgNameTemplate | `{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}-{{EnvironmentName}}` | Template used to determine the name of the organization created for new projects. |
+| spaceNameTemplate             | `{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}`                   | Template used to determine the name of the space created for new projects. |
+
+Variables available for `orgNameTemplate` and `spaceNameTemplate`:
+
+| Variable                      | Description                                                     |
+| --------                      | -----------                                                     |
+| RandomAdjective               | A randomly chosen adjective                                     |
+| RandomNoun                    | A randomly chosen noun                                          |
+| DeveloperUsername             | The username of the developer creating the project              |
+| DeveloperEmail                | The email address of the developer creating the project         |
+| RegionName                    | The region that the foundation is located in                    |
+| EnvironmentName               | Name of the environment (eg. dev, staging, prod, etc.)          |
+| ProjectName                   | The project name the developer will set during project creation |
+
+##### Custom Template Variables Configuration
+
+DevConnect allows custom template variables to be defined and used with the `orgNameTemplate` and `spaceNameTemplate`.
+
+| Field          | Description                                                                                    |
+| -----          | -----------                                                                                    |
+| variableName   | The variable name used in `orgNameTemplate` and `spaceNameTemplate`. This is a required field. |
+| displayName    | The UI label used to identify the field for user input. This is a required field.              |
+| displayText    | The placeholder text shown in the UI text field                                                |
+| characterLimit | The maximum number of characters allowed as input. This is a required field.                   |
+
+Example:
+
+```yaml
+    ...
+    orgNameTemplate: '{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}-{{CostCenter}}'
+    spaceNameTemplate: '{{RandomAdjective}}-{{ProjectName}}-{{CostCenter}}'
+    customTemplateVariables:
+    - variableName: CostCenter
+      displayName: Cost Center
+      displayText: Please enter your Cost Center
+      characterLimit: 10
+    ...
+```
+
+##### Foundation configuration
+
+DevConnect requires information about each foundation to be stored in the `foundations` array:
+
+| Field                         | Placeholder                                  | Description                                                                                                                                                                                                                                       |
+| -----                         | ---------                                    | -----------                                                                                                                                                                                                                                       |
+| name                          | `<foundation-name>`                          | Human readable name for foundation                                                                                                                                                                                                                |
+| uuid                          | `<foundation-uuid>`                          | The manually generated UUID for the foundation                                                                                                                                                                                                    |
+| region                        | `<foundation-region>`                        | The region that the foundation is located in. This will be used to group foundations and environments together                                                                                                                                    |
+| apiUrl                        | `<foundation-cf-api-url>`                    | The CF API url                                                                                                                                                                                                                                    |
+| admin                         |                                              | Admin credentials used by DevConnect to create resources on the foundation                                                                                                                                                                         |
+| admin.clientId                | `<devconnect-foundation-admin-client-id>`     | Admin Client ID registered on Foundation UAA with "cloud_controller.admin" authority                                                                                                                                                              |
+| admin.clientSecret            | `<devconnect-foundation-admin-client-secret>` | Corresponding Secret                                                                                                                                                                                                                              |
+| environments                  |                                              | List of environments supported by the foundation |
+| environments[].name           |                                              | Name of the environment (eg. dev, staging, prod, etc.)                                                                                                                                                                                            |
+| environments[].orgRole        |                                              | Org Role to assign to the user. Acceptable value: `auditors`. *__Note__: even if "auditors" is selected, the user will also be added to the "users" group.*                                                                                  |
+| environments[].spaceRole      |                                              | Space Role to assign to the user. Acceptable values: `auditors` and `developers`.                                                                                                                                                                    |
+| tutorialEnvironment           |                                              | Specifies the environment to be used by the tutorial                                                                                                                                                                                              |
+| tutorialEnvironment.name      |                                              | The name for the tutorial environment                                                                                                                                                                                                             |
+| tutorialEnvironment.orgRole   |                                              | The org role to be used for the tutorial environment. Acceptable value: `auditors`.                                                                                                                                                                    |
+| tutorialEnvironment.spaceRole |                                              | The space role to be used for the tutorial environment. Acceptable values: `auditors` and `developers`.                                                                                                                                                                   |
+| tutorialEnvironment.quotaName |                                              | The name for the quota to be used by the tutorial environment. It must exist on the foundation in question.                                                                                                                                       |
+| oauth                         |                                              | OAuth configuration, used for users to login against foundation to verify identity. *__Note__: The values can be retrieved by querying the UAA well-known openid config endpoint: `https://uaa.sys.<foundation host>/.well-known/openid-configuration`* |
+| oauth.authorizeUrl            |                                              | OAuth authorize url on UAA. eg. `https://login.sys.<foundation host>/oauth/authorize`                                                                                                                                                             |
+| oauth.tokenUrl                |                                              | OAuth token url on UAA. eg. `https://login.sys.<foundation host>/oauth/token`                                                                                                                                                                     |
+| oauth.clientId                | `<devconnect-foundation-auth-client-id>`      | Authorization Code grant type client                                                                                                                                                                                                              |
+| oauth.clientSecret            | `<devconnect-foundation-auth-client-secret>`  | Authorization Code grant type client secret                                                                                                                                                                                                       |
+| oauth.issuerUrl               |                                              | OAuth issuer url on UAA. eg. `https://uaa.sys.<foundation host>/oauth/token`                                                                                                                                                                      |
+| oauth.jwksUrl                 |                                              | OAuth jwks url on UAA. eg. `https://login.sys.<foundation host>/token_keys`                                                                                                                                                                       |
+| oauth.authenticationType      |                                              | Specifies what type of identity provider backs the foundation in question. Valid options are: `saml`, `internal`, `ldap`.                                                                                                                               |
+
+
+## Deploying on PAS
+
+Requirements:
+* container registry credentials
+* you have logged into Pivotal Container Registry
+
+
+1. Download the DevConnect container image
+  ```
+  docker pull registry.pivotal.io/developer-connect/developer-connect:latest
+  ```
+1. Target the cf api and login
+    ```
+    $ cf api <your cf api host>
+    $ cf login
+    ```
+1. Push DevConnect to CF:
+    ```
+    $ CF_DOCKER_PASSWORD=<pivnet registry password> cf push -f devconnect-manifest.yml --vars-file devconnect-vars.yml
+    ```
+    where `<pivnet registry password>` is the password you used to login to Pivotal Container Registry

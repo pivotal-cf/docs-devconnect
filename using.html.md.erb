@@ -1,31 +1,80 @@
 ---
-title: Using YOUR-PRODUCT-NAME
-owner: Partners
+title: Using Developer Connect
+owner: DevConnect
 ---
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to use YOUR-PRODUCT-NAME.
+This topic describes how to use <%= vars.product_full %>.
 
-##<a id='using'></a> Using YOUR-PRODUCT-NAME
+##<a id='using'></a> Using <%= vars.product_full %>
 
-**This topic should include any instructions for how to use the service or dashboard created by the tile.
-Give procedures for how to perform the different functions offered by your product and provide screenshots where necessary.**
+## What is <%= vars.product_full %>?
+My Pivotal helps get setup quickly to deploy applications across the different foundations. Here are some key terms:
 
-Other topics that you should address in your documentation:
+### Foundation
+A Foundation is a PCF (Pivotal Cloud Foundry) installation that can host applications on PAS (Pivotal Application Service).
 
-+ **Troubleshooting**---If you include a Troubleshooting section, follow the Symptom/Explanation format used in the
-  [Okta Troubleshooting](http://docs.pivotal.io/p-identity/okta/troubleshooting.html) topic.
+A single foundation is located in a single region. Having multiple foundations allows for high availability across different
+regions (e.g. West and East). A foundation may also be configured to a specific production level (e.g. sandbox, development, staging, and production).
+These production levels correspond to Environments.
 
-+ **Disaster recovery**--How do you recover data from the tile after a disaster? How do you perform backups?
+### Environment
+You administrator has configured different environment types in each foundation. The are labeled (e.g. development or production).
+The actual names may vary and are configured by your administrator.
+Environments are configured to give you different permissions depending if they are intended for development or production. For example:
+* a "development" environment may be configured to allow you to deploy your app directly via the CF CLI while
+* a "production" environment may be configured to only allow you to deploy your app through CI <!-- TODO: flesh out after https://www.pivotaltracker.com/epic/show/4422756 -->
 
-+ **Scalability**--How do you scale up the tile? How do you know when you need to scale up?
+### Project
+<%= vars.product_full %> allows you to create projects, which are a collection of environments across one or more foundations.
+This organizational structure allows you to view all the places where you can deploy your app. For example,
+you may have an app in:
+* two production environments, one in us-west and another in us-east for high availability
+* one staging environment in us-west, and
+* one development environment in us-west
 
-+ **Monitoring**--How do you monitor the tile? Does the tile send events to the Loggregator Firehose?
+## Logging In
+On your first visit you'll be prompted to log in. Depending how your administrator has configured your foundation, you
+will be prompted to sign in via the UAA or your single-sign-on provider.
 
-+ **Auditing**--Can Pivotal Platform operators use the standard Accounting and Usage reports?
+## Tutorial Flow
+<!--
+TODO: this should be documented as part of https://www.pivotaltracker.com/story/show/168014696
+-->
 
-+ **Security**--How is this tile secured? How is the data secured?
+## Project Creation Flow
+After choosing the create a project from the dashboard. You will be taken through a series of steps to create a project
+with one or more environments.
 
-You can create separate pages for each of these topics or group them in one page about administering or maintaining the tile.
+### Specifying a project name
+Your project name should describe the name of the app which will be deployed. It is recommended, but not required, that
+the name does not contain spaces.
 
+### Selecting your environment
+You may select the environments that you want to provision. They are organized by the regions in which they are located.
+
+### Selecting your quota
+Select the quota for each environment being provisioned.
+
+### Authorizing
+Login to each PCF Foundation to confirm that you have permissions to access it. <%= vars.product_full %> will create the necessary
+resources and assign permissions to your account to access provisioned environments.
+
+### Confirming your choices
+Confirm the details of the project and environments being created.
+
+#### Project creation
+When project creation is submitted, <%= vars.product_full %> performs the following for each environment:
+- An org and space with selected quota are created on the appropriate PCF instance using a combination of the project name and env name
+- Permissions are assigned to your account to access the created org and space
+
+The created project and details are saved in <%= vars.product_full %> for you to access in the dashboard.
+
+## Dashboard
+The Dashboard displays the projects, and the corresponding environments, that you have created.
+
+### Discovering how to deploy your app
+You can get details on how to deploy your app by clicking the "View how to deploy your app" link, featured on each card
+of the dashboard. This card shows details about how your users can deploy their code to their provisioned environments.
+The instructions are dependent on the role access they have for each environment.
