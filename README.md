@@ -22,7 +22,7 @@ Always make changes you want carried forward in the master branch. This includes
 
 | Branch Name| Use for… |
 |------------| ---------|
-| master (current work)    | v0.1 (staged here: http://docs-pcf-staging.cfapps.io/developer-connect/0-n/|
+| master (current work)    | v0.1 (staged here: http://docs-pcf-staging.cfapps.io/developer-connect/0-alpha/|
 
 When the latest alpha version is ready to publish, merge the master branch into an alpha branch.
 Keep all the alpha versions of the release notes stacked in the [Release Notes for Pivotal Developer Connect](http://docs-pcf-staging.cfapps.io/developer-connect/0-n/release-notes.html) page.
