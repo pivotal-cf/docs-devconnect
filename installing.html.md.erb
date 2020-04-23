@@ -19,7 +19,7 @@ This topic describes how to install and configure <%= vars.product_full %>.
   - this will correspond to the value `<foundation-uuid>` used later
 - The route that will be used to access the DevConnect server
   - this will correspond to the value `<route-to-devconnect>` used later
-- One or more running PCF foundations managed by [Cloud Foundry Management (cf-mgmt)](https://github.com/vmwarepivotallabs/cf-mgmt)
+- One or more running foundations managed by [Cloud Foundry Management (cf-mgmt)](https://github.com/vmwarepivotallabs/cf-mgmt)
 
 ## Configuring DevConnect with an IDP
 
@@ -30,8 +30,8 @@ Users of DevConnect need a user on the DevConnect IDP and have users on each fou
 For convenience we recommend configuring your DevConnect IDP and all the PCF UAAs to be backed by one SAML or LDAP IDP. This reduces some administrative overhead and allows for a faster and less cumbersome login experience for the DevConnect user.
 
 Examples of a DevConnect IDP can be:
-- A [Pivotal SSO Service](https://network.pivotal.io/products/pivotal_single_sign-on_service/) instance
-- A UAA instance on an existing PCF installation
+- A [Single Sign-On for VMware Tanzu](https://network.pivotal.io/products/pivotal_single_sign-on_service/) instance
+- A UAA instance on an existing foundation installation
 - A standalone UAA instance
 
 <!--
@@ -117,7 +117,7 @@ DevConnect needs to authenticate it's users through it's IDP.
 See [Kubernetes-Deployment/README.MD](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment)
 
 ## Prerequisites
- - a PCF foundation running Pivotal Application Service with binary buildpack installed
+ - a foundation running VMware Tanzu Application Service for VMs with binary buildpack installed
 
 ### Manifest
 

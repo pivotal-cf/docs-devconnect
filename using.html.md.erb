@@ -10,17 +10,20 @@ This topic describes how to use <%= vars.product_full %>.
 ##<a id='using'></a> Using <%= vars.product_full %>
 
 ## What is <%= vars.product_full %>?
-My Pivotal helps get setup quickly to deploy applications across the different foundations. Here are some key terms:
+<%= vars.product_full %> helps get setup quickly to deploy applications across the different foundations.
+Here are some key terms:
 
-### Foundation
-A Foundation is a PCF (Pivotal Cloud Foundry) installation that can host applications on PAS (Pivotal Application Service).
+###<a name='term-foundation'></a> Foundation
+A Foundation is an installation that can host applications on <%= vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>).
 
-A single foundation is located in a single region. Having multiple foundations allows for high availability across different
-regions (e.g. West and East). A foundation may also be configured to a specific production level (e.g. sandbox, development, staging, and production).
+A single foundation is located in a single region.
+Having multiple foundations allows for high availability across different regions (e.g. West and East).
+A foundation may also be configured to a specific production level (e.g. sandbox, development, staging, and production).
 These production levels correspond to Environments.
 
 ### Environment
-You administrator has configured different environment types in each foundation. The are labeled (e.g. development or production).
+You administrator has configured different environment types in each foundation.
+They are labelled (e.g. development or production).
 The actual names may vary and are configured by your administrator.
 Environments are configured to give you different permissions depending if they are intended for development or production. For example:
 * a "development" environment may be configured to allow you to deploy your app directly via the CF CLI while
