@@ -181,6 +181,7 @@ devconnect-entitlements-config: |
       displayName: Cost Center
       displayText: Please enter your Cost Center
       characterLimit: 10
+    CFMgmtClonedReposDir: /root/cf-mgmt-repos
     foundations:
     - name: "<foundation-name>"
       uuid: "<foundation-uuid>"
@@ -284,6 +285,13 @@ Example:
       displayText: Please enter your Cost Center
       characterLimit: 10
     ...
+```
+
+##### CFMgmtClonedReposDir Configuration
+
+DevConnect clones all cf-mgmt repositories at startup. As such you must provide a location to use. This directory will not be created for you, so make sure you create it. For example
+```
+mkdir -p /root/cf-mgmt-repos
 ```
 
 ##### Foundation configuration
