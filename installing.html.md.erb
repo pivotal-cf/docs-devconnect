@@ -186,9 +186,13 @@ devconnect-entitlements-config: |
       uuid: "<foundation-uuid>"
       region: "<foundation-region>"
       apiUrl: "<foundation-cf-api-url>"
-      admin:
-         clientId: "<devconnect-foundation-admin-client-id>"
-         clientSecret: "<devconnect-foundation-admin-client-secret>"
+      cfMgmtRepo:
+        configDir: alternate-config-name
+        repoUrl: git@example.com:user/repo.git
+        privateKey: | 
+          -----BEGIN RSA PRIVATE KEY-----
+          -----END RSA PRIVATE KEY-----
+        privateKeyPassPhrase: password
       tutorialEnvironment:
          name: sandbox
          orgRole: auditors
@@ -213,21 +217,21 @@ devconnect-entitlements-config: |
 
 Notes on values:
 
-| Key                           | Placeholder                       | Description|
-| -----                         | ---------                         | -----------|
-| devconnect-route               | `<route-to-devconnect>`            | A route to where you plan to run DevConnect (e.g. devconnect.<your foundation's apps domain>, some-hostname-you-configured.com) |
-| devconnect-auth-client-id      | `<devconnect-auth-client-id>`      | The client created when creating the DevConnect Admin Client Credential. |
-| devconnect-auth-client-secret  | `<devconnect-auth-client-secret>`  | The secret created when creating the DevConnect Admin Client Credential. |
-| devconnect-auth-base-url       | `<devconnect-auth-base-url>`       | The authorization base URL of the DevConnect IDP |
-| session-secret                | `<devconnect-session-secret>`      | Arbitrary string used to encrypt session cookies|
-|db-type|`<db-type>`|DevConnect supports two types of SQL database: `mysql` and `postgres`|
-| db-host                       | `<your-sql-db-host>`         | sql database host |
-| db-port                       | `<your-sql-db-port>`         | sql database port |
-| db-username                   | `<your-sql-db-username>`     | sql database username|
-| db-name                       | `<your-sql-db-name>`         | sql database name|
-| db-password                   | `<your-sql-db-password>`     | sql database password|
-| db-max-connections            | `<your-selected-max-connections>` | Maximum number of connections that DevConnect creates to the database. Should be set lower than the maximum number of concurrent connections the database allows. Default is 3. |
-| devconnect-entitlements-config | | YAML object of configurations for each foundation. See entitlements config section below.|
+| Key                            | Placeholder                       | Description                                                                                                                                                                     |
+| ---                            | -----------                       | -----------                                                                                                                                                                     |
+| devconnect-route               | `<route-to-devconnect>`           | A route to where you plan to run DevConnect (e.g. devconnect.<your foundation's apps domain>, some-hostname-you-configured.com)                                                 |
+| devconnect-auth-client-id      | `<devconnect-auth-client-id>`     | The client created when creating the DevConnect Admin Client Credential.                                                                                                        |
+| devconnect-auth-client-secret  | `<devconnect-auth-client-secret>` | The secret created when creating the DevConnect Admin Client Credential.                                                                                                        |
+| devconnect-auth-base-url       | `<devconnect-auth-base-url>`      | The authorization base URL of the DevConnect IDP                                                                                                                                |
+| session-secret                 | `<devconnect-session-secret>`     | Arbitrary string used to encrypt session cookies                                                                                                                                |
+| db-type                        | `<db-type>`                       | DevConnect supports two types of SQL database: `mysql` and `postgres`                                                                                                           |
+| db-host                        | `<your-sql-db-host>`              | sql database host                                                                                                                                                               |
+| db-port                        | `<your-sql-db-port>`              | sql database port                                                                                                                                                               |
+| db-username                    | `<your-sql-db-username>`          | sql database username                                                                                                                                                           |
+| db-name                        | `<your-sql-db-name>`              | sql database name                                                                                                                                                               |
+| db-password                    | `<your-sql-db-password>`          | sql database password                                                                                                                                                           |
+| db-max-connections             | `<your-selected-max-connections>` | Maximum number of connections that DevConnect creates to the database. Should be set lower than the maximum number of concurrent connections the database allows. Default is 3. |
+| devconnect-entitlements-config |                                   | YAML object of configurations for each foundation. See entitlements config section below.                                                                                       |
 
 #### DevConnect Entitlements Config
 
@@ -240,10 +244,10 @@ The `devconnect-entitlements-config` is a YAML object that stores additional dev
 
 DevConnect requires a template to be configured for org and space names in the values `orgNameTemplate` and `spaceNameTemplate`. Use the delimiters `{}` to specify different fields. The fields are described below:
 
-|Field|Placeholder|Description|
-|---|---|---|
-| orgNameTemplate | `{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}-{{EnvironmentName}}` | Template used to determine the name of the organization created for new projects. |
-| spaceNameTemplate             | `{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}`                   | Template used to determine the name of the space created for new projects. |
+| Field             | Placeholder                                                                     | Description                                                                       |
+|-------------------|---------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| orgNameTemplate   | `{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}-{{EnvironmentName}}` | Template used to determine the name of the organization created for new projects. |
+| spaceNameTemplate | `{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}`                     | Template used to determine the name of the space created for new projects.        |
 
 Variables available for `orgNameTemplate` and `spaceNameTemplate`:
 
@@ -286,32 +290,34 @@ Example:
 
 DevConnect requires information about each foundation to be stored in the `foundations` array:
 
-| Field                         | Placeholder                                  | Description                                                                                                                                                                                                                                       |
-| -----                         | ---------                                    | -----------                                                                                                                                                                                                                                       |
-| name                          | `<foundation-name>`                          | Human readable name for foundation                                                                                                                                                                                                                |
-| uuid                          | `<foundation-uuid>`                          | The manually generated UUID for the foundation                                                                                                                                                                                                    |
-| region                        | `<foundation-region>`                        | The region that the foundation is located in. This will be used to group foundations and environments together                                                                                                                                    |
-| apiUrl                        | `<foundation-cf-api-url>`                    | The CF API url                                                                                                                                                                                                                                    |
-| admin                         |                                              | Admin credentials used by DevConnect to create resources on the foundation                                                                                                                                                                         |
-| admin.clientId                | `<devconnect-foundation-admin-client-id>`     | Admin Client ID registered on Foundation UAA with "cloud_controller.admin" authority                                                                                                                                                              |
-| admin.clientSecret            | `<devconnect-foundation-admin-client-secret>` | Corresponding Secret                                                                                                                                                                                                                              |
-| environments                  |                                              | List of environments supported by the foundation |
-| environments[].name           |                                              | Name of the environment (eg. dev, staging, prod, etc.)                                                                                                                                                                                            |
-| environments[].orgRole        |                                              | Org Role to assign to the user. Acceptable value: `auditors`. *__Note__: even if "auditors" is selected, the user will also be added to the "users" group.*                                                                                  |
-| environments[].spaceRole      |                                              | Space Role to assign to the user. Acceptable values: `auditors` and `developers`.                                                                                                                                                                    |
-| tutorialEnvironment           |                                              | Specifies the environment to be used by the tutorial                                                                                                                                                                                              |
-| tutorialEnvironment.name      |                                              | The name for the tutorial environment                                                                                                                                                                                                             |
-| tutorialEnvironment.orgRole   |                                              | The org role to be used for the tutorial environment. Acceptable value: `auditors`.                                                                                                                                                                    |
-| tutorialEnvironment.spaceRole |                                              | The space role to be used for the tutorial environment. Acceptable values: `auditors` and `developers`.                                                                                                                                                                   |
-| tutorialEnvironment.quotaName |                                              | The name for the quota to be used by the tutorial environment. It must exist on the foundation in question.                                                                                                                                       |
-| oauth                         |                                              | OAuth configuration, used for users to login against foundation to verify identity. *__Note__: The values can be retrieved by querying the UAA well-known openid config endpoint: `https://uaa.sys.<foundation host>/.well-known/openid-configuration`* |
-| oauth.authorizeUrl            |                                              | OAuth authorize url on UAA. eg. `https://login.sys.<foundation host>/oauth/authorize`                                                                                                                                                             |
-| oauth.tokenUrl                |                                              | OAuth token url on UAA. eg. `https://login.sys.<foundation host>/oauth/token`                                                                                                                                                                     |
-| oauth.clientId                | `<devconnect-foundation-auth-client-id>`      | Authorization Code grant type client                                                                                                                                                                                                              |
-| oauth.clientSecret            | `<devconnect-foundation-auth-client-secret>`  | Authorization Code grant type client secret                                                                                                                                                                                                       |
-| oauth.issuerUrl               |                                              | OAuth issuer url on UAA. eg. `https://uaa.sys.<foundation host>/oauth/token`                                                                                                                                                                      |
-| oauth.jwksUrl                 |                                              | OAuth jwks url on UAA. eg. `https://login.sys.<foundation host>/token_keys`                                                                                                                                                                       |
-| oauth.authenticationType      |                                              | Specifies what type of identity provider backs the foundation in question. Valid options are: `saml`, `internal`, `ldap`.                                                                                                                               |
+| Field                           | Placeholder                                  | Description                                                                                                                                                                                                                                             |
+| -----                           | ---------                                    | -----------                                                                                                                                                                                                                                             |
+| name                            | `<foundation-name>`                          | Human readable name for foundation                                                                                                                                                                                                                      |
+| uuid                            | `<foundation-uuid>`                          | The manually generated UUID for the foundation                                                                                                                                                                                                          |
+| region                          | `<foundation-region>`                        | The region that the foundation is located in. This will be used to group foundations and environments together                                                                                                                                          |
+| apiUrl                          | `<foundation-cf-api-url>`                    | The CF API url                                                                                                                                                                                                                                          |
+| cfMgmtRepo                      |                                              | The cf-mgmt configuration parameters                                                                                                                                                                                                                    |
+| cfMgmtRepo.config               |                                              | Optional argument: the name of the cf-mgmt config directory. Defaults to "config" in the root of the repository.                                                                                                                                        |
+| cfMgmtRepo.repoUrl              |                                              | The location of the repository. Currently only ssh and filesystem repositories are supported.                                                                                                                                                           |
+| cfMgmtRepo.privateKey           |                                              | Optional argument: the private key to used to connect to a remote server                                                                                                                                                                                |
+| cfMgmtRepo.privateKeyPassPhrase |                                              | Optional argument: the passphrase to decrypt the private key                                                                                                                                                                                            |
+| environments                    |                                              | List of environments supported by the foundation                                                                                                                                                                                                        |
+| environments[].name             |                                              | Name of the environment (eg. dev, staging, prod, etc.)                                                                                                                                                                                                  |
+| environments[].orgRole          |                                              | Org Role to assign to the user. Acceptable value: `auditors`. *__Note__: even if "auditors" is selected, the user will also be added to the "users" group.*                                                                                             |
+| environments[].spaceRole        |                                              | Space Role to assign to the user. Acceptable values: `auditors` and `developers`.                                                                                                                                                                       |
+| tutorialEnvironment             |                                              | Specifies the environment to be used by the tutorial                                                                                                                                                                                                    |
+| tutorialEnvironment.name        |                                              | The name for the tutorial environment                                                                                                                                                                                                                   |
+| tutorialEnvironment.orgRole     |                                              | The org role to be used for the tutorial environment. Acceptable value: `auditors`.                                                                                                                                                                     |
+| tutorialEnvironment.spaceRole   |                                              | The space role to be used for the tutorial environment. Acceptable values: `auditors` and `developers`.                                                                                                                                                 |
+| tutorialEnvironment.quotaName   |                                              | The name for the quota to be used by the tutorial environment. It must exist on the foundation in question.                                                                                                                                             |
+| oauth                           |                                              | OAuth configuration, used for users to login against foundation to verify identity. *__Note__: The values can be retrieved by querying the UAA well-known openid config endpoint: `https://uaa.sys.<foundation host>/.well-known/openid-configuration`* |
+| oauth.authorizeUrl              |                                              | OAuth authorize url on UAA. eg. `https://login.sys.<foundation host>/oauth/authorize`                                                                                                                                                                   |
+| oauth.tokenUrl                  |                                              | OAuth token url on UAA. eg. `https://login.sys.<foundation host>/oauth/token`                                                                                                                                                                           |
+| oauth.clientId                  | `<devconnect-foundation-auth-client-id>`     | Authorization Code grant type client                                                                                                                                                                                                                    |
+| oauth.clientSecret              | `<devconnect-foundation-auth-client-secret>` | Authorization Code grant type client secret                                                                                                                                                                                                             |
+| oauth.issuerUrl                 |                                              | OAuth issuer url on UAA. eg. `https://uaa.sys.<foundation host>/oauth/token`                                                                                                                                                                            |
+| oauth.jwksUrl                   |                                              | OAuth jwks url on UAA. eg. `https://login.sys.<foundation host>/token_keys`                                                                                                                                                                             |
+| oauth.authenticationType        |                                              | Specifies what type of identity provider backs the foundation in question. Valid options are: `saml`, `internal`, `ldap`.                                                                                                                               |
 
 
 ## Deploying on PAS
