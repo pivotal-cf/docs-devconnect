@@ -1,0 +1,417 @@
+---
+title: Deploying Developer Connect on TAS
+owner: DevConnect
+---
+
+<strong><%= modified_date %></strong>
+
+This topic describes how to deploy <%= vars.product_full %>.
+
+
+## <a id="prereq"></a>Prerequisites
+
+Before you deploy <%= vars.product_short %>, you must have:
+
+- A Kubernetes or <%= vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>) installation with the binary buildpack.
+See the [kubernetes-deployment README.MD](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment) in GitHub.
+- did the procedure on the other page
+
+## <a id="manifest"></a> Create the Manifest
+
+<!-- The following is our speculation on how Alana will deploy DevConnect.
+It should be updated after this story, https://www.pivotaltracker.com/story/show/168938874 to reflect how to actually deploy the packaged DevConnect.  -->
+
+You must create an app manifest file to `cf push` <%= vars.product_short %>.<br><br>
+To create the manifest file:
+
+1. Create a manifest file named `devconnect-manifest.yml` in DIRECTORY.
+
+
+1. Add the following contents to the manifest file:
+
+    ```
+    ---
+    applications:
+      - name: devconnect
+        memory: 1G
+        instances: 1
+        routes:
+        - route: ((devconnect-route))
+        path: ./
+        buildpacks: [ binary_buildpack ]
+        command: ./devconnect-linux
+        env:
+          DEVCONNECTL_AUTH_CLIENT_ID: ((devconnect-auth-client-id))
+          DEVCONNECTL_AUTH_CLIENT_SECRET: ((devconnect-auth-client-secret))
+          DEVCONNECTL_AUTH_BASE_URL: ((devconnect-auth-base-url))
+          DEVCONNECTL_SESSION_SECRET: ((session-secret))
+          DEVCONNECTL_DB_TYPE: ((db-type))
+          DEVCONNECTL_DB_HOST: ((db-host))
+          DEVCONNECTL_DB_PORT: ((db-port))
+          DEVCONNECTL_DB_USER_NAME: ((db-username))
+          DEVCONNECTL_DB_NAME: ((db-name))
+          DEVCONNECTL_DB_PASSWORD: ((db-password))
+          DEVCONNECTL_DB_MAX_CONNECTIONS: ((db-max-connections))
+          DEVCONNECTL_ENTITLEMENTS_CONFIG_STRING: ((devconnect-entitlements-config))
+    ```
+
+## <a id="config"></a> Create a Variables Configuration File
+
+You must create a configuration file to populate variable interpolation values for <%= vars.product_short %>.<br><br>
+To create the configuration file:
+
+
+
+### <a id="config-creds"></a> Add Credentials
+1. Create a configuration file named `devconnect-vars.yml` in DIRECTORY.
+
+1. Add the following <%= vars.product_short %> credentials to the configuration file:
+
+    ```
+    ---
+    devconnect-route: DEVCONNECT-ROUTE
+    devconnect-auth-client-id: LOGIN-ID
+    devconnect-auth-client-secret: LOGIN-SECRET
+    devconnect-auth-base-url: BASE-URL
+    session-secret: SESSION-SECRET
+    ```
+
+    Where:
+
+    <table>
+      <tr>
+        <th width=25%>Placeholder</th>
+        <th>Value</th>
+      </tr>
+
+      <tr>
+        <td><code>DEVCONNECT-ROUTE</code></td>
+        <td>The route you created to access the <%= vars.product_short %> server.</td>
+      </tr>
+
+      <tr>
+        <td><code>LOGIN-ID</code></td>
+        <td>The login client ID you recorded in
+          <a href="./configuring.html#devconnect-idp">Configure the <%= vars.product_short %> IdP</a>.
+          By default, this is <code>devconnect&#95;login&#95;client</code>.</td>
+      </tr>
+
+      <tr>
+        <td><code>LOGIN-SECRET</code></td>
+        <td>The login client secret you recorded in
+          <a href="./configuring.html#devconnect-idp">Configure the <%= vars.product_short %> IdP</a>.</td>
+      </tr>
+
+      <tr>
+        <td><code>BASE-URL</code></td>
+        <td>The authorization base URL you recorded in
+          <a href="./configuring.html#devconnect-idp">Configure the <%= vars.product_short %> IdP</a>.</td>
+      </tr>
+
+      <tr>
+        <td><code>SESSION-SECRET</code></td>
+        <td>This is an arbitrary string used to encrypt session cookies.</td>
+      </tr>
+      </table>
+
+1. Append the following database credentials to the configuration file:
+
+    ```
+    db-type: DATABASE-TYPE
+    db-host: DATABASE-HOST
+    db-port: DATABASE-PORT
+    db-username: DATABASE-USERNAME
+    db-name: DATABASE-NAME
+    db-password: DATABASE-PASSWORD
+    db-max-connections: DATABASE-CONNECTIONS
+    ```
+    Where:
+
+    <table>
+      <tr>
+        <th width=25%>Placeholder</th>
+        <th>Value</th>
+      </tr>
+
+
+        <tr>
+          <td><code>DATABASE-TYPE</code></td>
+          <td>This is the SQL database you are using with <%= vars.product_short %>.
+             <%= vars.product_short %> supports <code>mysql</code> and <code>postgres</code>.</td>
+        </tr>
+
+        <tr>
+          <td><code>DATABASE-HOST</code></td>
+          <td>The host for your SQL database.</td>
+        </tr>
+
+        <tr>
+          <td><code>DATABASE-PORT</code></td>
+          <td>The port number for your SQL database.</td>
+        </tr>
+
+        <tr>
+          <td><code>DATABASE-USERNAME</code></td>
+          <td>The username for your SQL database.</td>
+        </tr>
+
+        <tr>
+          <td><code>DATABASE-NAME</code></td>
+          <td>The name of your SQL database.</td>
+        </tr>
+
+        <tr>
+          <td><code>DATABASE-PASSWORD</code></td>
+          <td>The password for your SQL database.</td>
+        </tr>
+
+        <tr>
+          <td><code>DATABASE-CONNECTIONS</code></td>
+          <td>The maximum number of connections that you want <%= vars.product_short %> to create to the database.
+            You should set this value to be lower than the maximum number of concurrent connections the database permits.
+            Default is <code>3</code>.</td>
+        </tr>
+    </table>
+
+
+### <a id="config-entitle"></a> Add Entitlements Config
+
+
+The value of the `devconnect-entitlements-config` key is a YAML object that stores
+<%= vars.product_short %> configuration information.
+ `devconnect-entitlements-config` has the following value types:
+
+* Org and space name templates configuration such as `orgNameTemplate` and `spaceNameTemplate`
+* customTemplateVariables can be<%# Consider switching to active voice. %> added to be used with `orgNameTemplate` and `spaceNameTemplate`
+* Foundation configuration stored in `foundations`
+
+
+1. Append the following template variables to the configuration file:
+
+    ```
+    devconnect-entitlements-config: |
+      orgNameTemplate: 'ORG-TEMPLATE'
+      spaceNameTemplate: 'SPACE-TEMPLATE'
+      customTemplateVariables:
+      - variableName: CUSTOM-VAR
+        displayName: CUSTOM-VAR-DISPLAY
+        displayText: CUSTOM-VAR-DISPLAY-TEXT
+        characterLimit: CHAR-LIMIT
+    ```
+    Where:
+    + `ORG-TEMPLATE` and `SPACE-TEMPLATE` are templates for org and space names.
+      See [Add Org and Space Template](#config-org-space) below.
+    + (Optional) The placeholders in the `customTemplateVariables` section are custom template variables you can define.
+      You can create multiple custom variables.
+      See [(Optional) Add Custom Template](#config-custom) below.
+
+1.
+
+
+#### <a id="config-org-space"></a> Add Org and Space Template
+
+You can configure templates for the org and space names that <%= vars.product_short%> creates for new projects.
+To configure the templates, use the `orgNameTemplate` and `spaceNameTemplate` key.
+
+The following table describes the available template fields:
+
+<table>
+  <tr>
+    <th width=28%>Variable</th>
+    <th>Description</th>
+  </tr>
+
+  <tr>
+    <td><code>{{RandomAdjective}}</code></td>
+    <td>A randomly chosen adjective</td>
+  </tr>
+
+  <tr>
+    <td><code>{{RandomNoun}}</code></td>
+    <td>A randomly chosen noun</td>
+  </tr>
+
+  <tr>
+    <td><code>{{DeveloperUsername}}</code></td>
+    <td>The username of the developer creating the project</td>
+  </tr>
+
+  <tr>
+    <td><code>{{DeveloperEmail}}</code></td>
+    <td>The email address of the developer creating the project</td>
+  </tr>
+
+  <tr>
+    <td><code>{{RegionName}}</code></td>
+    <td>The region that the foundation is located in</td>
+  </tr>
+
+  <tr>
+    <td><code>{{EnvironmentName}}</code></td>
+    <td>Name of the environment</td>
+  </tr>
+
+  <tr>
+    <td><code>{{ProjectName}}</code></td>
+    <td>The project name the developer sets when they create the project</td>
+  </tr>
+</table>
+
+
+For example:
+
+```ruby
+{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}-{{EnvironmentName}}
+```
+
+
+#### <a id="config-custom"></a> (Optional) Add Custom Template
+
+You can define custom template variables.
+You can use these variables in the `orgNameTemplate` and `spaceNameTemplate` keys.
+
+
+<table>
+  <tr>
+    <th width="22%">Field</th>
+    <th>Description</th>
+  </tr>
+
+  <tr>
+    <td><code>variableName</code></td>
+    <td>The variable name used in the <code>orgNameTemplate</code> or <code>spaceNameTemplate</code> key.
+        This is a required field.</td>
+  </tr>
+
+  <tr>
+    <td><code>displayName</code></td>
+    <td>The UI label used to identify the field. This is a required field.</td>
+  </tr>
+
+  <tr>
+    <td><code>displayText</code></td>
+    <td>The placeholder text shown in the UI field.</td>
+  </tr>
+
+  <tr>
+    <td><code>characterLimit</code></td>
+    <td>The maximum number of characters limit. This is a required field.</td>
+  </tr>
+</table>
+
+For example:
+
+```
+customTemplateVariables:
+- variableName: CostCenter
+  displayName: Cost Center
+  displayText: Please enter your Cost Center
+  characterLimit: 10
+```
+
+#### Foundation configuration <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+
+<%= vars.product_short %> requires information about each foundation to be stored in the `foundations` array:
+
+| Field                         | Placeholder                                  | Description                                                                                                                                                                                                                                       |
+| -----                         | ---------                                    | -----------                                                                                                                                                                                                                                       |
+| name                          | `<foundation-name>`                          | Human readable name<%# The compound adjective is missing a hyphen. %> for foundation                                                                                                                                                                                                                |
+| uuid                          | `<foundation-uuid>`                          | The manually generated UUID for the foundation                                                                                                                                                                                                    |
+| region                        | `<foundation-region>`                        | The region that the foundation is located in. This will<%# Avoid "will": present tense is preferred. %> be used to group foundations and environments together                                                                                                                                    |
+| apiUrl                        | `<foundation-cf-api-url>`                    | The CF API url<%# "URL" is preferred. %>                                                                                                                                                                                                                                    |
+| admin                         |                                              | Admin credentials used by <%= vars.product_short %> to create resources on the foundation                                                                                                                                                                         |
+| admin.clientId                | `<devconnect-foundation-admin-client-id>`     | Admin Client ID registered on Foundation UAA with "cloud_controller.admin" authority                                                                                                                                                              |
+| admin.clientSecret            | `<devconnect-foundation-admin-client-secret>` | Corresponding Secret                                                                                                                                                                                                                              |
+| environments                  |                                              | List of environments supported by the foundation |
+| environments[].name           |                                              | Name of the environment (eg. dev, staging, prod<%# "production" is preferred. %>, etc.)                                                                                                                                                                                            |
+| environments[].orgRole        |                                              | Org Role to assign to the user. Acceptable value: `auditors`. *__Note__: even if "auditors" is selected, the user will<%# Avoid "will": present tense is preferred. %> also be added to the "users" group.*                                                                                  |
+| environments[].spaceRole      |                                              | Space Role to assign to the user. Acceptable values: `auditors` and `developers`.                                                                                                                                                                    |
+| tutorialEnvironment           |                                              | Specifies the environment to be used by the tutorial                                                                                                                                                                                              |
+| tutorialEnvironment.name      |                                              | The name for the tutorial environment                                                                                                                                                                                                             |
+| tutorialEnvironment.orgRole   |                                              | The org<%# "organization" is preferred unless referring to the Cloud Foundry org concept. %> role to be used for the tutorial environment. Acceptable value: `auditors`.                                                                                                                                                                    |
+| tutorialEnvironment.spaceRole |                                              | The space role to be used for the tutorial environment. Acceptable values: `auditors` and `developers`.                                                                                                                                                                   |
+| tutorialEnvironment.quotaName |                                              | The name for the quota to be used by the tutorial environment. It must exist on the foundation in question.                                                                                                                                       |
+| oauth                         |                                              | OAuth configuration, used for users to login<%# Use "login" (n) and "log in" (v). %> against foundation to verify identity. *__Note__: The values can be<%# Consider switching to active voice. %> retrieved by querying the UAA well-known openid config endpoint: `https://uaa.sys.<foundation host>/.well-known/openid-configuration`* |
+| oauth.authorizeUrl            |                                              | OAuth authorize url<%# "URL" is preferred. %> on UAA. eg. <%# "For example" is preferred. %>`https://login.sys.<foundation host>/oauth/authorize`                                                                                                                                                             |
+| oauth.tokenUrl                |                                              | OAuth token url<%# "URL" is preferred. %> on UAA. eg. <%# "For example" is preferred. %>`https://login.sys.<foundation host>/oauth/token`                                                                                                                                                                     |
+| oauth.clientId                | `<devconnect-foundation-auth-client-id>`      | Authorization Code grant type client                                                                                                                                                                                                              |
+| oauth.clientSecret            | `<devconnect-foundation-auth-client-secret>`  | Authorization Code grant type client secret                                                                                                                                                                                                       |
+| oauth.issuerUrl               |                                              | OAuth issuer url<%# "URL" is preferred. %> on UAA. eg. <%# "For example" is preferred. %>`https://uaa.sys.<foundation host>/oauth/token`                                                                                                                                                                      |
+| oauth.jwksUrl                 |                                              | OAuth jwks url<%# "URL" is preferred. %> on UAA. eg. <%# "For example" is preferred. %>`https://login.sys.<foundation host>/token_keys`                                                                                                                                                                       |
+| oauth.authenticationType      |                                              | Specifies what type of identity provider backs the foundation in question. Valid options are: `saml`, `internal`, `ldap`.                                                                                                                               |
+
+
+```
+---
+devconnect-route: DEVCONNECT-ROUTE
+devconnect-auth-client-id: LOGIN-ID
+devconnect-auth-client-secret: LOGIN-SECRET
+devconnect-auth-base-url: BASE-URL
+session-secret: SESSION-SECRET
+db-type: DATABASE-TYPE
+db-host: DATABASE-HOST
+db-port: DATABASE-PORT
+db-username: DATABASE-USERNAME
+db-name: DATABASE-NAME
+db-password: DATABASE-PASSWORD
+db-max-connections: DATABASE-CONNECTIONS
+devconnect-entitlements-config: |
+    orgNameTemplate: '{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}-{{EnvironmentName}}'
+    spaceNameTemplate: '{{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}'
+    customTemplateVariables:
+    - variableName: CostCenter
+      displayName: Cost Center
+      displayText: Please enter your Cost Center
+      characterLimit: 10
+    foundations:
+    - name: "<foundation-name>"
+      uuid: "<foundation-uuid>"
+      region: "<foundation-region>"
+      apiUrl: "<foundation-cf-api-url>"
+      admin:
+         clientId: "<devconnect-foundation-admin-client-id>"
+         clientSecret: "<devconnect-foundation-admin-client-secret>"
+      tutorialEnvironment:
+         name: sandbox
+         orgRole: auditors
+         spaceRole: developers
+         quotaName: sandbox
+      environments:
+      - name: dev
+        orgRole: auditors
+        spaceRole: developers
+      - name: prod
+        orgRole: auditors
+        spaceRole: auditors
+      oauth:
+        authorizeUrl: https://login.sys.<foundation host>/oauth/authorize
+        tokenUrl: https://login.sys.<foundation host>/oauth/token
+        clientId: <devconnect-foundation-auth-client-id>
+        clientSecret: <devconnect-foundation-auth-client-secret>
+        issuerUrl: https://uaa.sys.<foundation host>/oauth/token
+        jwksUrl: https://login.sys.<foundation host>/token_keys
+        authenticationType: saml
+```
+
+
+## Deploying on PAS<%# Use <%= vars.app_runtime_abbr %> <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+
+Requirements:
+* c<%# Bullet points start with uppercase letters. %>ontainer registry credentials
+* y<%# Bullet points start with uppercase letters. %>ou have logged into Pivotal Container Registry
+
+
+1. Download the <%= vars.product_short %> container image
+  ```
+  docker pull registry.pivotal.io/developer-connect/developer-connect:latest
+  ```
+1. Target the cf api and login
+    ```
+    $ cf api <your cf api host>
+    $ cf login
+    ```
+1. Push <%= vars.product_short %> to CF:
+    ```
+    $ CF_DOCKER_PASSWORD=<pivnet registry password> cf push<%# If code, add code tags and sandwich between "the" and "command". %> -f devconnect-manifest.yml --vars-file devconnect-vars.yml
+    ```
+    where `<pivnet registry password>` is the password you used to login<%# Use "login" (n) and "log in" (v). %> to<%# "log in to" is preferred. %> Pivotal Container Registry
