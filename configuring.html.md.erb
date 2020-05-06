@@ -7,12 +7,20 @@ owner: DevConnect
 
 This topic describes how to configure <%= vars.product_full %>.
 
-## <a id="Overview"></a> Overivew
+## <a id="Overview"></a> Overview
 
-Configure UAA stuff
-Install it
+To deploy <%= vars.product_short %> you must create and configure UAA clients
+to enable <%= vars.product_short %> to connect to your foundations.
 
-See the [kubernetes-deployment README.MD](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment) in GitHub.
+To configure <%= vars.product_short %>:
+
+1. [Configure <%= vars.product_short %> a IdP](#idp)
+
+1. [Configure the Foundation UAA](#foundation-uaa)
+
+
+After you configure <%= vars.product_short %>, you can deploy <%= vars.product_short %> by following
+the procedures in [Deploying <%= vars.product_short %>  on <%= vars.app_runtime_abbr %>](./deploying.html)
 
 ## <a id="prereq"></a>Prerequisites
 
@@ -21,17 +29,17 @@ Before you configure <%= vars.product_short %>, you must have:
 - The User Account and Authentication Command Line Interface (UAAC).
   See [cf-uaac](https://github.com/cloudfoundry/cf-uaac) in GitHub.
 - A generated UUID string for each foundation you want to configure.
-  The UUID can be arbitrary. However, it must be consistent throughout the configuration
+  The UUID can be arbitrary but you must use the same value throughout the configuration.
   You can use a tool such as `uuidgen` to generate random UUIDs.
   For more information, see the [man7 website](http://man7.org/linux/man-pages/man1/uuidgen.1.html).
 - A route for accessing the <%= vars.product_short %> server.
 - One or more running foundations managed by Cloud Foundry Management (cf-mgmt).
-See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
+  See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
 
-## <a id="idp"></a>Configure an IDP
+## <a id="idp"></a>Configure a <%= vars.product_short %>  IdP
 
 <%= vars.product_short %> requires an OpenID Connect (OIDC) OAuth2 provider.
-In this documentation, we refer to this provider as
+In the following procedure, VMware refers to this provider as
 a <%= vars.product_short %> identity provider (IdP).
 
 The user accounts you configure for the <%= vars.product_short %> IdP
@@ -47,9 +55,7 @@ You can use the following as a <%= vars.product_short %> IdP:
 - A Single Sign-On for VMware Tanzu instance.
   See [Single Sign-On for VMware Tanzu](https://docs.pivotal.io/p-identity/).
 - A UAA instance on an existing foundation.
-  See [Configure <%= vars.product_short %> IdP using UAA](#uaac) below.
 - A standalone UAA instance.
-  See [Configure <%= vars.product_short %> IdP using UAA](#uaac) below.
 
 <!--
 Right now this documentation assumes that you've setup a UAA or the Pivotal SSO service to work with DevConnect.
@@ -58,9 +64,9 @@ https://www.pivotaltracker.com/story/show/168939821 asks us to document:
   * Add section or another page on setting up SAML IDP
   * Add section for configuring Pivotal SSO Service (Note from the Docs team: Can we just link to the SSO docs?)-->
 
-### <a id="devconnect-idp"></a> Configure the <%= vars.product_short %> IdP
+### <a id="devconnect-uaa"></a> Configure the <%= vars.product_short %> UAA
 
-You must do this procedure for each foundation you want to add <%= vars.product_short %> to.
+You must do this procedure for each foundation you want to add to <%= vars.product_short %>.
 
 To configure a UAA instance for <%= vars.product_short %>:
 
@@ -85,11 +91,17 @@ To configure a UAA instance for <%= vars.product_short %>:
 
 1. Record the following values from the above command:
     * The login client ID. By default, this is `devconnect_login_client`.
-    * The login client secret. This is secret you entered.
+    * The login client secret. This is secret you entered.<br><br>
+    You use these values in
+    [Add <%= vars.product_short %> and Database Credentials](./deploying.html#config-creds) in
+    _Deploying <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
 1. Record the authorization base URL of the UAA instance.
     The base URL is the host that provides the well-known OpenID configuration.
-    It is usually in the form `uaa.sys.FOUNDATION-DOMAIN`, where `YOUR-SYSTEM-DOMAIN` is your
-   foundation fully qualified domain name (FQDN).
+    It is usually in the form `uaa.sys.FOUNDATION-DOMAIN`, where `FOUNDATION-DOMAIN` is your
+   foundation fully qualified domain name (FQDN).<br><br>
+   You use this value in
+   [Add <%= vars.product_short %> and Database Credentials](./deploying.html#config-creds) in
+   _Deploying <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
 
 1. Verify the authorization base URL by querying:
 
@@ -104,26 +116,23 @@ You must assign a generated UUID to your foundation.
 
 To add a foundation to <%= vars.product_short %> you must configure the following clients on the foundation UAA:
 
-- A client with the Client Credentials grant type with `cloud_controller.admin` authority.<br>
-  See [Configure Admin Client Credential](#admin-creds) below.
+- A client with the Client Credentials grant type with `cloud_controller.admin` authority.
+  See [Configure Admin Client Credential](#admin-creds) below.<br><br>
   <%= vars.product_short %> uses this grant type to:
     - Fetch org quotas
-    - Create orgs
-    - Create spaces
-    - Assign org roles
-    - Assign space roles
+    - Create orgs and spaces
+    - Assign org and space roles
 
-- A client with the Authorization Code grant type with the `openid` scope.<br>
-  See [Configure Authorization Code Client Credentials](#auth-creds) below.
+- A client with the Authorization Code grant type with the `openid` scope.
+  See [Configure Authorization Code Client Credentials](#auth-creds) below.<br><br>
   <%= vars.product_short %> uses this grant type to:
-    - Verify that a user exists
-    - Verify that a user has the correct scopes
+    - Verify that a user exists and has the correct scopes
     - Create a user in the UAA if the user does not already exist
 
 ### <a id="admin-creds"></a> Configure Admin Client Credential
 
 <%= vars.product_short %> needs an admin client credentials to create orgs and spaces for a foundation UAA.
-You must do the procedure in this section for each foundation you want to add <%= vars.product_short %> to.
+You must do the procedure in this section for each foundation you want to add to <%= vars.product_short %>.
 
 To create admin client credentials for <%= vars.product_short %>:
 
@@ -147,17 +156,20 @@ To create admin client credentials for <%= vars.product_short %>:
 
 1. Record the following values from the above command:
    * The admin client ID. By default, this is `devconnect_admin_client`.
-   * The admin client secret. This is secret you entered.
+   * The admin client secret. This is secret you entered.<br><br>
+   You use these values in
+   [Add Foundation Configurations](./deploying.html#config-foundation) in
+   _Deploying <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
 
 ### <a id="auth-creds"></a> Configure Authorization Code Client Credentials
 
 <%= vars.product_short %> needs Authorization Code client credentials to
 authenticate and authorize users using the <%= vars.product_short %> IdP.
-You must do the procedure in this section for each foundation you want to add <%= vars.product_short %> to.
+You must do the procedure in this section for each foundation you want to add to <%= vars.product_short %>.
 
 To create Authorization Code client credentials for <%= vars.product_short %>:
 
-1. Register a authorization client with the Authorization Code grant type by running:
+1. Register an authorization client with the Authorization Code grant type by running:
 
     ```
     uaac client add \
@@ -182,4 +194,7 @@ To create Authorization Code client credentials for <%= vars.product_short %>:
 
 1. Record the following values from the above command:
     * The authorization client ID. By default, this is `devconnect_foundation_auth_client`.
-    * The authorization client secret. This is secret you entered.
+    * The authorization client secret. This is secret you entered. <br><br>
+    You use these values in
+    [Add Foundation Configurations](./deploying.html#config-foundation) in
+    _Deploying <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
