@@ -77,6 +77,13 @@ for <%= vars.product_short %>.<br><br>
 To create and configure the configuration file:
 
 1. Create a configuration file named `devconnect-vars.yml` in DIRECTORY.
+1. Create a `cf-mgmt` directory by running:
+
+    ```
+    mkdir -p /root/cf-mgmt-repos
+    ```
+    On startup, <%= vars.product_short %> clones all `cf-mgmt` repositories into this directory
+
 1. Add credentials information to the configuration file.
   See [Add <%= vars.product_short %> and Database Credentials](#config-creds) below.
 1. Add an entitlements config to the configuration file.
@@ -136,6 +143,11 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
         <td>This is an arbitrary string used to encrypt session cookies.</td>
       </tr>
       </table>
+1. Append the following line to the configuration file:
+
+    ```
+    CFMgmtClonedReposDir: /root/cf-mgmt-repos
+    ```
 
 1. Append the following database credentials to the configuration file:
 
@@ -391,13 +403,16 @@ To add and configure the `foundations` array:
 
     </table>
 
-1. Append the following admin credentials information to the configuration file
+1. Append the following `cf-mgmt` credentials information to the configuration file
     in the `devconnect-entitlements-config:` section:
 
     ```
-    admin:
-       clientId: "ADMIN-CLIENT-ID"
-       clientSecret: "ADMIN-CLIENT-SECRET"
+    cfMgmtRepo:
+      configDir: CONFIG-DIRECTORY
+      repoUrl: REPO-URL
+      privateKey: |
+        PRIVATE-KEY
+      privateKeyPassPhrase: PASSWORD
     ```
       Where:
       <table>
@@ -408,21 +423,40 @@ To add and configure the `foundations` array:
       </tr>
 
       <tr>
-        <td><code>ADMIN-CLIENT-ID</code></td>
-        <td>The admin client ID you recorded in
-          <a href="./configuring.html#admin-creds">Configure Admin Client Credential</a>.
-          By default, this is <code>devconnect&#95;admin&#95;client</code>.
+        <td><code>CONFIG-DIRECTORY</code></td>
+        <td>The name of your `cf-mgmt` configuration directory</td>
       </tr>
 
       <tr>
-        <td><code>ADMIN-CLIENT-SECRET</code></td>
-        <td>The admin client secret you recorded in
-          <a href="./configuring.html#admin-creds">Configure Admin Client Credential</a>.</td>
+        <td><code>REPO-URL</code></td>
+        <td>The URL for your `cf-mgmt` configuration Git repository </td>
+      </tr>
+
+      <tr>
+        <td><code>PRIVATE-KEY</code></td>
+        <td>The private key for your `cf-mgmt` configuration Git repository.</td>
+      </tr>
+
+      <tr>
+        <td><code>PASSWORD</code></td>
+        <td>The passphrase for your `cf-mgmt` configuration Git repository</td>
       </tr>
 
     </table>
     <br>
-    <%= vars.product_short %> uses these admin credentials to create resources on the foundation.
+    For example:
+
+    ```
+    cfMgmtRepo:
+      configDir: alternate-config-name
+      repoUrl: git@example.com:user/repo.git
+      privateKey: |
+        -----BEGIN RSA PRIVATE KEY-----
+        abcdEFGhIKlmfdskjlfdsfsnjwjnfDHFLDKSNLfjhkldsfnlsFDFDgdj
+                  ...
+        -----END RSA PRIVATE KEY-----
+      privateKeyPassPhrase: password
+    ```
 
 1. Append the following OAuth information to the configuration file
     in the `devconnect-entitlements-config:` section:
@@ -569,6 +603,7 @@ devconnect-auth-client-id: LOGIN-ID
 devconnect-auth-client-secret: LOGIN-SECRET
 devconnect-auth-base-url: BASE-URL
 session-secret: SESSION-SECRET
+CFMgmtClonedReposDir: /root/cf-mgmt-repos
 db-type: DATABASE-TYPE
 db-host: DATABASE-HOST
 db-port: DATABASE-PORT
@@ -589,9 +624,12 @@ devconnect-entitlements-config: |
         uuid: "FOUNDATION-UUID"
         region: "FOUNDATION-REGION"
         apiUrl: "FOUNDATION-URL"
-      admin:
-        clientId: "ADMIN-CLIENT-ID"
-        clientSecret: "ADMIN-CLIENT-SECRET"
+      cfMgmtRepo:
+        configDir: CONFIG-DIRECTORY
+        repoUrl: REPO-URL
+        privateKey: |
+          PRIVATE-KEY
+        privateKeyPassPhrase: PASSWORD
       oauth:
         authorizeUrl: https://login.sys.FOUNDATION-DOMAIN/oauth/authorize
         tokenUrl: https://login.sys.FOUNDATION-DOMAIN/oauth/token
@@ -613,7 +651,6 @@ devconnect-entitlements-config: |
         orgRole: auditors
         spaceRole: auditors
 ```
-
 
 ## <a id="push"></a>Push the <%= vars.product_short %> App
 
