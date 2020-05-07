@@ -349,10 +349,13 @@ To add and configure custom templates:
       characterLimit: 10
     ```
 
-#### <a id="config-cf-mgt"></a> Add cf-mgt directory
+#### <a id="config-cf-mgmt"></a> Add the cf-mgmt Directory
 
+On startup, <%= vars.product_short %> clones all `cf-mgmt` repositories into this directory.
+You created this directory in [Create a Variables Configuration File](#config) above.
 
-1. Append the following line to the configuration file:
+1. Append the following line to the configuration file
+    in the `devconnect-entitlements-config:` section
 
     ```
     CFMgmtClonedReposDir: /root/cf-mgmt-repos
