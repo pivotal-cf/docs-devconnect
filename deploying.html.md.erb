@@ -220,9 +220,10 @@ To create and configure the `devconnect-entitlements-config` key:
     See [Add Org and Space Templates](#config-org-space) below.
 1. (Optional) Add custom template variables to the configuration file.
     See [(Optional) Add Custom Templates](#config-custom) below.
+1. Add the directory for `cf-mgmt` repositories.
+    See [ Add the cf-mgmt Directory](#config-cf-mgmt) below.
 1. Add foundation information to the configuration file.
     See [Add Foundation Configurations](#config-foundation) below.
-
 
 #### <a id="config-org-space"></a> Add Org and Space Templates
 
@@ -354,6 +355,8 @@ To add and configure custom templates:
 On startup, <%= vars.product_short %> clones all `cf-mgmt` repositories into this directory.
 You created this directory in [Create a Variables Configuration File](#config) above.
 
+To add the `cf-mgmt` directory:
+
 1. Append the following line to the configuration file
     in the `devconnect-entitlements-config:` section
 
@@ -370,9 +373,6 @@ To add and configure the `foundations` array:
 
 1. Append the following identification information to the configuration file
     in the `devconnect-entitlements-config:` section:
-
-    ```
-    1. Append the following line to the configuration file:
 
     ```
     foundations:
