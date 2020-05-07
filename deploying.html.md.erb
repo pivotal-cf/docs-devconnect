@@ -143,11 +143,6 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
         <td>This is an arbitrary string used to encrypt session cookies.</td>
       </tr>
       </table>
-1. Append the following line to the configuration file:
-
-    ```
-    CFMgmtClonedReposDir: /root/cf-mgmt-repos
-    ```
 
 1. Append the following database credentials to the configuration file:
 
@@ -354,6 +349,15 @@ To add and configure custom templates:
       characterLimit: 10
     ```
 
+#### <a id="config-cf-mgt"></a> Add cf-mgt directory
+
+
+1. Append the following line to the configuration file:
+
+    ```
+    CFMgmtClonedReposDir: /root/cf-mgmt-repos
+    ```
+
 #### <a id="config-foundation"></a> Add Foundation Configurations
 
 You must add information for each foundation you want to add to <%= vars.product_short %>.
@@ -363,6 +367,9 @@ To add and configure the `foundations` array:
 
 1. Append the following identification information to the configuration file
     in the `devconnect-entitlements-config:` section:
+
+    ```
+    1. Append the following line to the configuration file:
 
     ```
     foundations:
@@ -603,7 +610,6 @@ devconnect-auth-client-id: LOGIN-ID
 devconnect-auth-client-secret: LOGIN-SECRET
 devconnect-auth-base-url: BASE-URL
 session-secret: SESSION-SECRET
-CFMgmtClonedReposDir: /root/cf-mgmt-repos
 db-type: DATABASE-TYPE
 db-host: DATABASE-HOST
 db-port: DATABASE-PORT
@@ -619,7 +625,8 @@ devconnect-entitlements-config: |
       displayName: CUSTOM-VAR-DISPLAY
       displayText: CUSTOM-VAR-DISPLAY-TEXT
       characterLimit: CHAR-LIMIT
-      foundations:
+    CFMgmtClonedReposDir: /root/cf-mgmt-repos
+    foundations:
       - name: "FOUNDATION-NAME"
         uuid: "FOUNDATION-UUID"
         region: "FOUNDATION-REGION"
