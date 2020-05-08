@@ -25,7 +25,7 @@ To deploy <%= vars.product_short %> on <%= vars.app_runtime_abbr %>:
 
 Before you deploy <%= vars.product_short %>, you must have:
 
-- Followed the procedures in [Configuring <%= vars.product_full %>](./configuring.html).
+- Followed the procedures in [Preparing <%= vars.product_full %> for Deployment](./preparing.html).
 - A <%= vars.app_runtime_abbr %> installation with the binary buildpack installed.
 - A <%= vars.product_network %> account.
 - The Docker ClI. See the [Docker website](https://www.docker.com/get-started).
@@ -77,13 +77,6 @@ for <%= vars.product_short %>.
 To create and configure the configuration file:
 
 1. Create a configuration file named `devconnect-vars.yml` in DIRECTORY.
-1. Create a `cf-mgmt` directory by running:
-
-    ```
-    mkdir -p /root/cf-mgmt-repos
-    ```
-    On startup, <%= vars.product_short %> clones all `cf-mgmt` repositories into this directory
-
 1. Add credentials information to the configuration file.
   See [Add <%= vars.product_short %> and Database Credentials](#config-creds) below.
 1. Add an entitlements config to the configuration file.
@@ -219,7 +212,7 @@ To create and configure the `devconnect-entitlements-config` key:
 1. Add org and space templates to the configuration file.
     See [Add Org and Space Templates](#config-org-space) below.
 1. (Optional) Add custom template variables to the configuration file.
-    See [(Optional) Add Custom Templates](#config-custom) below.
+    See [(Optional) Add Custom Variables](#config-custom) below.
 1. Add the directory for `cf-mgmt` repositories.
     See [ Add the cf-mgmt Directory](#config-cf-mgmt) below.
 1. Add foundation information to the configuration file.
@@ -292,7 +285,7 @@ To add and configure org and space name templates:
     ```
 
 
-#### <a id="config-custom"></a> (Optional) Add Custom Templates
+#### <a id="config-custom"></a> (Optional) Add Custom Variables
 
 You can define custom template variables
 and use these variables in the `orgNameTemplate` and `spaceNameTemplate` keys.
@@ -350,20 +343,6 @@ To add and configure custom templates:
       characterLimit: 10
     ```
 
-#### <a id="config-cf-mgmt"></a> Add the cf-mgmt Directory
-
-On startup, <%= vars.product_short %> clones all `cf-mgmt` repositories into this directory.
-You created this directory in [Create a Variables Configuration File](#config) above.
-
-To add the `cf-mgmt` directory:
-
-1. Append the following line to the configuration file
-    in the `devconnect-entitlements-config:` section
-
-    ```
-    CFMgmtClonedReposDir: /root/cf-mgmt-repos
-    ```
-
 #### <a id="config-foundation"></a> Add Foundation Configurations
 
 You must add information for each foundation you want to add to <%= vars.product_short %>.
@@ -419,7 +398,7 @@ To add and configure the `foundations` array:
     ```
     cfMgmtRepo:
       configDir: CONFIG-DIRECTORY
-      repoUrl: REPO-URL
+      repoUrl: REPO-SSH-URL
       privateKey: |
         PRIVATE-KEY
       privateKeyPassPhrase: PASSWORD
@@ -433,23 +412,27 @@ To add and configure the `foundations` array:
       </tr>
 
       <tr>
-        <td><code>CONFIG-DIRECTORY</code></td>
-        <td>The name of your `cf-mgmt` configuration directory</td>
+        <td>(Optional) <code>CONFIG-DIRECTORY</code></td>
+        <td>This is the custom name for your <code>cf-mgmt</code> configuration directory.<br><br>
+          This value overrides the default directory name that <code>cf-mgmt</code> creates when you create configuration files.
+          The default name is `config`.
+          You should only include this key-value pair if the configuration directory has a different name.
+          </td>
       </tr>
 
       <tr>
-        <td><code>REPO-URL</code></td>
-        <td>The URL for your `cf-mgmt` configuration Git repository </td>
+        <td><code>REPO-SSH-URL</code></td>
+        <td>The SSH URL for your <code>cf-mgmt</code> configuration Git repository </td>
       </tr>
 
       <tr>
         <td><code>PRIVATE-KEY</code></td>
-        <td>The private key for your `cf-mgmt` configuration Git repository.</td>
+        <td>The private key for your <code>cf-mgmt</code> configuration Git repository.</td>
       </tr>
 
       <tr>
         <td><code>PASSWORD</code></td>
-        <td>The passphrase for your `cf-mgmt` configuration Git repository</td>
+        <td>The passphrase for your <code>cf-mgmt</code> configuration Git repository</td>
       </tr>
 
     </table>
@@ -522,7 +505,7 @@ To add and configure the `foundations` array:
         <code>https<span>:</span>//uaa.sys.FOUNDATION-DOMAIN/.well-known/openid-configuration</code>.
         </p>
 
-1. Append the following environment information to the configuration file
+1. Append the following tutorial environment information to the configuration file
     in the `devconnect-entitlements-config:` section:
 
     ```
@@ -531,19 +514,15 @@ To add and configure the `foundations` array:
        orgRole: auditors
        spaceRole: developers
        quotaName: FOUNDATION-QUOTA
-    environments:
-    - name: dev
-      orgRole: auditors
-      spaceRole: developers
-    - name: prod
-      orgRole: auditors
-      spaceRole: auditors
     ```
-
     Where `FOUNDATION-QUOTA` is the quota name that is used by the tutorial environment.
-    This quota name must exist on the foundation. <br><br>
+    This quota name must exist on the foundation.
 
-    The following table describes the environment keys:
+    <p class="note"><strong>Note:</strong>
+      You must not include the <code>tutorialEnvironment</code> section in more than one
+      foundation.</p>
+
+    The following table describes the tutorial environment keys:
 
     <table>
 
@@ -576,6 +555,28 @@ To add and configure the `foundations` array:
         <td>tutorialEnvironment.quotaName</td>
         <td>The quota name that is used by the tutorial environment.
         This quota name must exist on the foundation. </td>
+      </tr>
+  </table>
+
+1.  Append the following environments information to the configuration file
+    in the `devconnect-entitlements-config:` section:
+
+    ```
+    environments:
+    - name: dev
+      orgRole: auditors
+      spaceRole: developers
+    - name: prod
+      orgRole: auditors
+      spaceRole: auditors
+    ```
+    The following table describes the environment keys:
+
+    <table>
+
+      <tr>
+        <th>Keys</th>
+        <th>Description</th>
       </tr>
 
       <tr>
@@ -628,7 +629,6 @@ devconnect-entitlements-config: |
       displayName: CUSTOM-VAR-DISPLAY
       displayText: CUSTOM-VAR-DISPLAY-TEXT
       characterLimit: CHAR-LIMIT
-    CFMgmtClonedReposDir: /root/cf-mgmt-repos
     foundations:
       - name: "FOUNDATION-NAME"
         uuid: "FOUNDATION-UUID"
@@ -636,7 +636,7 @@ devconnect-entitlements-config: |
         apiUrl: "FOUNDATION-URL"
       cfMgmtRepo:
         configDir: CONFIG-DIRECTORY
-        repoUrl: REPO-URL
+        repoUrl: REPO-SSH-URL
         privateKey: |
           PRIVATE-KEY
         privateKeyPassPhrase: PASSWORD

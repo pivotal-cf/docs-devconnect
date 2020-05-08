@@ -1,5 +1,5 @@
 ---
-title: Configuring Developer Connect
+title: Preparing Developer Connect for Deployment
 owner: DevConnect
 ---
 
@@ -14,7 +14,7 @@ to enable <%= vars.product_short %> to connect to your foundations.
 
 To configure <%= vars.product_short %>:
 
-1. [Configure <%= vars.product_short %> a IdP](#idp)
+1. [Configure a <%= vars.product_short %> IdP](#idp)
 
 1. [Configure the Foundation UAA](#foundation-uaa)
 
@@ -26,8 +26,6 @@ the procedures in [Deploying <%= vars.product_short %>  on <%= vars.app_runtime_
 
 Before you configure <%= vars.product_short %>, you must have:
 
-- The User Account and Authentication Command Line Interface (UAAC).
-  See [cf-uaac](https://github.com/cloudfoundry/cf-uaac) in GitHub.
 - A generated UUID string for each foundation you want to configure.
   The UUID can be arbitrary but you must use the same value throughout the configuration.
   You can use a tool such as `uuidgen` to generate random UUIDs.
@@ -36,7 +34,7 @@ Before you configure <%= vars.product_short %>, you must have:
 - One or more running foundations managed by Cloud Foundry Management (cf-mgmt).
   See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
 
-## <a id="idp"></a>Configure a <%= vars.product_short %>  IdP
+## <a id="idp"></a>Configure a <%= vars.product_short %> IdP
 
 <%= vars.product_short %> requires an OpenID Connect (OIDC) OAuth2 provider.
 In the following procedure, VMware refers to this provider as
@@ -62,13 +60,16 @@ Right now this documentation assumes that you've setup a UAA or the Pivotal SSO 
 https://www.pivotaltracker.com/story/show/168939821 asks us to document:
   * Test and document using an existing foundation UAA
   * Add section or another page on setting up SAML IDP
-  * Add section for configuring Pivotal SSO Service (Note from the Docs team: Can we just link to the SSO docs?)-->
+  * Add section for configuring Pivotal SSO Service -->
 
 ### <a id="devconnect-uaa"></a> Configure the <%= vars.product_short %> UAA
 
 You must do this procedure for each foundation you want to add to <%= vars.product_short %>.
 
-To configure a UAA instance for <%= vars.product_short %>:
+To configure a User Account and Authentication (UAA) instance for <%= vars.product_short %>:
+
+1. Create an UAA admin user by following the procedure in
+  [Create an Admin User](https://docs.pivotal.io/platform/application-service/2-9/uaa/uaa-user-management.html#creating-admin-users).
 
 1. Register a <%= vars.product_short %> login client by running:
 
@@ -95,21 +96,20 @@ To configure a UAA instance for <%= vars.product_short %>:
     You use these values in
     [Add <%= vars.product_short %> and Database Credentials](./deploying.html#config-creds) in
     _Deploying <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
-1. Record the authorization base URL of the UAA instance.
-    The base URL is the host that provides the well-known OpenID configuration.
-    It is usually in the form `uaa.sys.FOUNDATION-DOMAIN`, where `FOUNDATION-DOMAIN` is your
-   foundation fully qualified domain name (FQDN).<br><br>
-   You use this value in
-   [Add <%= vars.product_short %> and Database Credentials](./deploying.html#config-creds) in
-   _Deploying <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
-
-1. Verify the authorization base URL by querying:
+1. Verify the authorization base URL of the UAA instance by querying:
 
     ```
     https://uaa.sys.FOUNDATION-DOMAIN/.well-known/openid-configuration
     ```
+    Where `FOUNDATION-DOMAIN` is your foundation fully qualified domain name (FQDN). <br>
+    The base URL is the host that provides the well-known OpenID configuration.
+1. Record the authorization base URL. You use this value in
+   [Add <%= vars.product_short %> and Database Credentials](./deploying.html#config-creds) in
+   _Deploying <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
 
-## <a id="foundation-uaa"></a>Configure the Foundation UAA
+
+
+## <a id="foundation-uaa"></a>Configure the Foundation UAAs
 
 You must assign a generated UUID to your foundation.
 <%= vars.product_short %> uses this UUID to identify your foundation.
@@ -136,7 +136,7 @@ You must do the procedure in this section for each foundation you want to add to
 
 To create admin client credentials for <%= vars.product_short %>:
 
-1. Register a admin client with the Client Credentials grant type by running:
+1. Register an admin client with the Client Credentials grant type by running:
 
      ```
      uaac client add  \
