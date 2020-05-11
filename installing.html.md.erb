@@ -1,21 +1,23 @@
 ---
-title: Deploying Developer Connect on TAS for VMs
+title: Installing Developer Connect on VMware Tanzu Application Service for VMs
 owner: DevConnect
 ---
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to deploy <%= vars.product_full %> on <%= vars.app_runtime_full %>.
+This topic describes how to install <%= vars.product_full %> on <%= vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>).
 
 ## <a id="Overview"></a> Overview
 
-To deploy <%= vars.product_short %> to <% vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>)
+To install <%= vars.product_short %> on <%= vars.app_runtime_abbr %>
 you must configure an app manifest and variable file for <%= vars.product_short %>.
-If you want to deploy <%= vars.product_short %> on Kubernetes instead,
+After you configure the files, you must push the <%= vars.product_short %> to <%= vars.app_runtime_abbr %>.
+
+If you want to install <%= vars.product_short %> on Kubernetes instead,
 follow the procedure in
 [kubernetes-deployment](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment) in GitHub.
 
-To deploy <%= vars.product_short %> on <%= vars.app_runtime_abbr %>:
+To install <%= vars.product_short %> on <%= vars.app_runtime_abbr %>:
 
 1. [Create the App Manifest](#manifest)
 1. [Create a Variables Configuration File](#config)
@@ -23,17 +25,18 @@ To deploy <%= vars.product_short %> on <%= vars.app_runtime_abbr %>:
 
 ## <a id="prereq"></a>Prerequisites
 
-Before you deploy <%= vars.product_short %>, you must have:
+Before you install <%= vars.product_short %>, you must have:
 
 - Followed the procedures in [Preparing <%= vars.product_full %> for Deployment](./preparing.html).
 - A <%= vars.app_runtime_abbr %> installation with the binary buildpack installed.
-- A <%= vars.product_network %> account.
+- A private container registry. VMware recommends using the VMware Tanzu container registry.
 - The Docker ClI. See the [Docker website](https://www.docker.com/get-started).
 
 ## <a id="manifest"></a> Create the App Manifest
 
-<!-- The following is our speculation on how Alana will deploy DevConnect.
-It should be updated after this story, https://www.pivotaltracker.com/story/show/168938874 to reflect how to actually deploy the packaged DevConnect.  -->
+<%# The following is our speculation on how Alana will deploy DevConnect.
+It should be updated after this story, https://www.pivotaltracker.com/story/show/168938874
+to reflect how to actually deploy the packaged DevConnect.  %>
 
 You must create an app manifest file to `cf push` <%= vars.product_short %>.<br><br>
 To create the manifest file:
@@ -89,12 +92,13 @@ For an example of a configuration file, see [Example Configuration File](#exampl
 
 To add and configure credentials for <%= vars.product_short %> and a backing database:
 
-1. Add the following <%= vars.product_short %> credentials to the configuration file:
+1. Add the following credentials to the configuration file:
 
     ```
     ---
-    devconnect-image-location: DEVCONNECT-IMAGE-LOCATION
-    devconnect-image-registry-username: DEVCONNECT-IMAGE-REGISTRY-USERNAME
+    devconnect-image-location: DEVCONNECT-REGISTRY
+    devconnect-image-registry-username: DEVCONNECT-REGISTRY-USERNAME
+    WHAT IS THE KEY FOR THIS?: DEVCONNECT-REGISTRY-PASSWORD
     devconnect-route: DEVCONNECT-ROUTE
     devconnect-auth-client-id: LOGIN-ID
     devconnect-auth-client-secret: LOGIN-SECRET
@@ -106,24 +110,32 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
 
     <table>
       <tr>
-        <th width=25%>Placeholder</th>
+        <th width=35%>Placeholder</th>
         <th>Value</th>
       </tr>
 
       <tr>
-        <td><code>DEVCONNECT-IMAGE-LOCATION</code></td>
-        <td>The image location of devconnect. an example - registry.pivotal.io/developer-connect/developer-connect
-(currently not public as of May 11, 2020). <a target="_blank" href="https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html">Deploying an App with Docker</a></td>
+        <td><code>DEVCONNECT-REGISTRY</code></td>
+        <td>The private container registry for the <%= vars.product_short %> image.<br><br>
+          For example, if you are using the VMware Tanzu registry:
+            <code>registry.pivotal.io/developer-connect/developer-connect</code>
+          </td>
       </tr>
 
       <tr>
-        <td><code>DEVCONNECT-IMAGE-REGISTRY-USERNAME</code></td>
-        <td>The user name for the image registry where devconnect is located. You will need to set an environment variable for registry password `CF_DOCKER_PASSWORD`. <a target="_blank" href="https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html">Deploying an App with Docker</a></td>
+        <td><code>DEVCONNECT-REGISTRY-USERNAME</code></td>
+        <td>The username for the private container registry for the <%= vars.product_short %> image.<br><br>
+            For example, if you are using the VMware Tanzu registry, this is the username you use
+            to log in to <%= vars.product_network %>.</td>
       </tr>
 
       <tr>
-        <td><code>DEVCONNECT-IMAGE-REGISTRY-PASSWORD</code></td>
-        <td>If the image registry requires a password you must set the password as an environment variable `CF_DOCKER_PASSWORD` on the machine being used to deploy. <a target="_blank" href="https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html">Deploying an App with Docker</a></td>
+        <td><code>DEVCONNECT-REGISTRY-PASSWORD</code></td>
+        <td>(Optional)
+          The password for the private container registry for the <%= vars.product_short %> image.
+          You should only include this key-value pair if your registry requires a password. <br><br>
+          For example, if you are using the VMware Tanzu registry, this is the password you use
+          to log in to <%= vars.product_network %>.</td>
       </tr>
 
       <tr>
@@ -218,7 +230,7 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
 
 ### <a id="config-entitle"></a> Add Entitlements Config
 
-The entitlements config contains configuration information in a `devconnect-entitlements-config` key
+The entitlements config contains configuration information in a `devconnect-entitlements-config` key.
 The value of this key is a YAML object with values types you must configure.
 
 To create and configure the `devconnect-entitlements-config` key:
@@ -232,8 +244,6 @@ To create and configure the `devconnect-entitlements-config` key:
     See [Add Org and Space Templates](#config-org-space) below.
 1. (Optional) Add custom template variables to the configuration file.
     See [(Optional) Add Custom Variables](#config-custom) below.
-1. Add the directory for `cf-mgmt` repositories.
-    See [ Add the cf-mgmt Directory](#config-cf-mgmt) below.
 1. Add foundation information to the configuration file.
     See [Add Foundation Configurations](#config-foundation) below.
 
@@ -252,12 +262,12 @@ To add and configure org and space name templates:
       spaceNameTemplate: 'SPACE-TEMPLATE'
     ```
 
-1. Replace `ORG-TEMPLATE` and `SPACE-TEMPLATE` with template fields.
+1. Replace `ORG-TEMPLATE` and `SPACE-TEMPLATE` with template fields.<br>
   The following table describes the available template fields:
 
     <table>
       <tr>
-        <th width=30%>Variable</th>
+        <th width=35%>Variable</th>
         <th>Description</th>
       </tr>
 
@@ -332,23 +342,23 @@ To add and configure custom templates:
 
       <tr>
         <td><code>CUSTOM-VAR</code></td>
-        <td>(Required) The variable name used in the <code>orgNameTemplate</code>
+        <td>The variable name used in the <code>orgNameTemplate</code>
           or <code>spaceNameTemplate</code> key.</td>
       </tr>
 
       <tr>
         <td><code>CUSTOM-VAR-DISPLAY</code></td>
-        <td>(Required) The UI label used to identify the field.</td>
+        <td>The UI label used to identify the field.</td>
       </tr>
 
       <tr>
         <td><code>CUSTOM-VAR-DISPLAY-TEXT</code></td>
-        <td>The placeholder text shown in the UI field.</td>
+        <td> (Optional) The placeholder text shown in the UI field.</td>
       </tr>
 
       <tr>
         <td><code>CHAR-LIMIT</code></td>
-        <td>(Required) The maximum number of permitted characters for a field.</td>
+        <td>The maximum number of permitted characters for a field.</td>
       </tr>
     </table><br>
 
@@ -434,7 +444,7 @@ To add and configure the `foundations` array:
         <td>(Optional) <code>CONFIG-DIRECTORY</code></td>
         <td>This is the custom name for your <code>cf-mgmt</code> configuration directory.<br><br>
           This value overrides the default directory name that <code>cf-mgmt</code> creates when you create configuration files.
-          The default name is `config`.
+          The default name is <code>config</code>.
           You should only include this key-value pair if the configuration directory has a different name.
           </td>
       </tr>
@@ -493,14 +503,17 @@ To add and configure the `foundations` array:
 
       <tr>
         <td><code>FOUNDATION-DOMAIN</code></td>
-        <td>The domain name for the foundation.</td>
+        <td>The domain name for the foundation.<br>
+            If you are installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>,
+            this is your system domain. You can find your system domain in <%= vars.app_runtime_abbr %> tile
+            on the <strong>Domains</strong> pane.</td>
       </tr>
 
       <tr>
         <td><code>AUTH-CLIENT-ID</code></td>
         <td>The authorization client ID you recorded in
           <a href="./preparing.html#auth-creds">Configure Authorization Code Client Credentials</a>.
-          By default, this is <code>devconnect&#95;foundation&#95;auth&#95;client</code>.</td>
+          </td>
       </tr>
 
       <tr>
@@ -519,8 +532,8 @@ To add and configure the `foundations` array:
     <br>
 
     <%= vars.product_short%> uses the OAuth information to verify users for login.
-        <p class="note"><strong>Note:</strong> These values can be
-        retrieved by querying the UAA well-known OpenID config endpoint:
+        <p class="note"><strong>Note:</strong> You can retrieve these values by
+          querying the UAA well-known OpenID config endpoint:
         <code>https<span>:</span>//uaa.sys.FOUNDATION-DOMAIN/.well-known/openid-configuration</code>.
         </p>
 
@@ -628,6 +641,9 @@ The following is a example of an configuration file:
 
 ```
 ---
+devconnect-image-location: DEVCONNECT-REGISTRY
+devconnect-image-registry-username: DEVCONNECT-REGISTRY-USERNAME
+WHAT IS THE KEY FOR THIS?: DEVCONNECT-REGISTRY-PASSWORD
 devconnect-route: DEVCONNECT-ROUTE
 devconnect-auth-client-id: LOGIN-ID
 devconnect-auth-client-secret: LOGIN-SECRET
@@ -685,7 +701,7 @@ devconnect-entitlements-config: |
 
 To push the <%= vars.product_short %> app:
 
-1. Log in to the registry by...
+1. Log in to the private container registry by [DOING A THING]
 
 1. Download the <%= vars.product_short %> container image by running:
 
@@ -705,7 +721,7 @@ To push the <%= vars.product_short %> app:
 1. Push <%= vars.product_short %> by running:
 
     ```
-    CF_DOCKER_PASSWORD=VMWARE-NETWORK-PASSWORD  \
+    CF_DOCKER_PASSWORD=DEVCONNECT-REGISTRY-PASSWORD  \
     cf push -f devconnect-manifest.yml --vars-file devconnect-vars.yml
     ```
-    Where `VMWARE-NETWORK-PASSWORD` is the password you used to log in to <%= vars.product_network %>.
+    Where `DEVCONNECT-REGISTRY-PASSWORD` is the password you use to log in to <%= vars.product_network %>.
