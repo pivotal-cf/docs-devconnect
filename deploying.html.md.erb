@@ -51,22 +51,23 @@ To create the manifest file:
         instances: 1
         routes:
         - route: ((devconnect-route))
-        path: ./
-        buildpacks: [ binary_buildpack ]
+        docker:
+          image: ((devconnect-image-location))
+          username: ((devconnect-image-registry-username))
         command: ./devconnect-linux
         env:
-          DEVCONNECTL_AUTH_CLIENT_ID: ((devconnect-auth-client-id))
-          DEVCONNECTL_AUTH_CLIENT_SECRET: ((devconnect-auth-client-secret))
-          DEVCONNECTL_AUTH_BASE_URL: ((devconnect-auth-base-url))
-          DEVCONNECTL_SESSION_SECRET: ((session-secret))
-          DEVCONNECTL_DB_TYPE: ((db-type))
-          DEVCONNECTL_DB_HOST: ((db-host))
-          DEVCONNECTL_DB_PORT: ((db-port))
-          DEVCONNECTL_DB_USER_NAME: ((db-username))
-          DEVCONNECTL_DB_NAME: ((db-name))
-          DEVCONNECTL_DB_PASSWORD: ((db-password))
-          DEVCONNECTL_DB_MAX_CONNECTIONS: ((db-max-connections))
-          DEVCONNECTL_ENTITLEMENTS_CONFIG_STRING: ((devconnect-entitlements-config))
+          DEVCONNECT_AUTH_CLIENT_ID: ((devconnect-auth-client-id))
+          DEVCONNECT_AUTH_CLIENT_SECRET: ((devconnect-auth-client-secret))
+          DEVCONNECT_AUTH_BASE_URL: ((devconnect-auth-base-url))
+          DEVCONNECT_SESSION_SECRET: ((session-secret))
+          DEVCONNECT_DB_TYPE: ((db-type))
+          DEVCONNECT_DB_HOST: ((db-host))
+          DEVCONNECT_DB_PORT: ((db-port))
+          DEVCONNECT_DB_USER_NAME: ((db-username))
+          DEVCONNECT_DB_NAME: ((db-name))
+          DEVCONNECT_DB_PASSWORD: ((db-password))
+          DEVCONNECT_DB_MAX_CONNECTIONS: ((db-max-connections))
+          DEVCONNECT_ENTITLEMENTS_CONFIG_STRING: ((devconnect-entitlements-config))
     ```
 
 ## <a id="config"></a> Create a Variables Configuration File
@@ -92,6 +93,8 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
 
     ```
     ---
+    devconnect-image-location: DEVCONNECT-IMAGE-LOCATION
+    devconnect-image-registry-username: DEVCONNECT-IMAGE-REGISTRY-USERNAME
     devconnect-route: DEVCONNECT-ROUTE
     devconnect-auth-client-id: LOGIN-ID
     devconnect-auth-client-secret: LOGIN-SECRET
@@ -105,6 +108,22 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
       <tr>
         <th width=25%>Placeholder</th>
         <th>Value</th>
+      </tr>
+
+      <tr>
+        <td><code>DEVCONNECT-IMAGE-LOCATION</code></td>
+        <td>The image location of devconnect. an example - registry.pivotal.io/developer-connect/developer-connect
+(currently not public as of May 11, 2020). [Deploying an App with Docker](https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html)</td>
+      </tr>
+
+      <tr>
+        <td><code>DEVCONNECT-IMAGE-REGISTRY-USERNAME</code></td>
+        <td>The user name for the image registry where devconnect is located. You will need to set an environment variable for registry password `CF_DOCKER_PASSWORD`. [Deploying an App with Docker](https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html)</td>
+      </tr>
+
+      <tr>
+        <td><code>DEVCONNECT-IMAGE-REGISTRY-PASSWORD</code></td>
+        <td>If the image registry requires a password you must set the password as an environment variable `CF_DOCKER_PASSWORD` on the machine being used to deploy. [Deploying an App with Docker](https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html)</td>
       </tr>
 
       <tr>

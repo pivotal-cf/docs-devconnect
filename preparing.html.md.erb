@@ -57,7 +57,7 @@ You can use the following as a <%= vars.product_short %> IdP:
 - A Single Sign-On for VMware Tanzu instance.
   See [Single Sign-On for VMware Tanzu](https://docs.pivotal.io/p-identity/).
 - A UAA instance on an existing foundation.
-- A standalone UAA instance.
+- A standalone UAA instance. [Deploying UAA](https://docs.cloudfoundry.org/concepts/architecture/uaa.html#quickstart)
 
 <!--
 Right now this documentation assumes that you've setup a UAA or the Pivotal SSO service to work with DevConnect.
@@ -68,9 +68,19 @@ https://www.pivotaltracker.com/story/show/168939821 asks us to document:
 
 ### <a id="devconnect-uaa"></a> Configure the <%= vars.product_short %> UAA
 
-You must do this procedure for each foundation you want to add to <%= vars.product_short %>.
+You will be using User Account and Authentication Client (UAAC) to connect to the UAA. Further documentation on how to connect and manage users with UAA can be found [here](https://docs.cloudfoundry.org/uaa/uaa-user-management.html)
 
-To configure a User Account and Authentication (UAA) instance for <%= vars.product_short %>:
+To configure a UAA instance for <%= vars.product_short %>:
+
+1. Target the <%= vars.product_short %> UAA instance with UAAC
+    ```
+    uaac target uaa.UAA-DOMAIN
+    ```
+
+1. Login with the admin client credentials
+    ```
+    uaac token client get <ADMIN-CLIENT> -s <ADMIN-CLIENT-SECRET>
+    ```
 
 1. Create an UAA admin user by following the procedure in
   [Create an Admin User](https://docs.pivotal.io/platform/application-service/2-9/uaa/uaa-user-management.html#creating-admin-users).
@@ -133,18 +143,34 @@ To add a foundation to <%= vars.product_short %> you must configure the followin
     - Verify that a user exists and has the correct scopes
     - Create a user in the UAA if the user does not already exist
 
-### <a id="admin-creds"></a> Configure Admin Client Credential
+### <a id="targeting-foundation-uaa"></a> Targeting Foundation UAA
+
+You will be using User Account and Authentication Client (UAAC) to connect to the UAA. Further documentation on how to connect and manage users with UAA can be found [here](https://docs.cloudfoundry.org/uaa/uaa-user-management.html)
+
+You will need to perform these steps in order to configure UAA clients. You will need to target each foundation once when you are adding the foundation to <%= vars.product_short %>.
+
+1. Target the foundation UAA instance with UAAC
+    ```
+    uaac target uaa.UAA-DOMAIN
+    ```
+
+1. Login with the admin client credentials
+    ```
+    uaac token client get <ADMIN-CLIENT> -s <ADMIN-CLIENT-SECRET>
+    ```
+
+### <a id="admin-creds"></a> Configure Foundation Admin Client Credential
 
 <%= vars.product_short %> needs an admin client credentials to create orgs and spaces for a foundation UAA.
 You must do the procedure in this section for each foundation you want to add to <%= vars.product_short %>.
 
 To create admin client credentials for <%= vars.product_short %>:
 
-1. Register an admin client with the Client Credentials grant type by running:
+1. Register a <%= vars.product_short %> admin client with the Client Credentials grant type by running:
 
      ```
      uaac client add  \
-       --name devconnect_admin_client \
+       --name devconnect_<FOUNDATION-NAME>_admin_client \
        --authorized_grant_types client_credentials \
        --authorities cloud_controller.admin
      ```
@@ -152,7 +178,7 @@ To create admin client credentials for <%= vars.product_short %>:
 
      For example:
      <pre class="terminal">$ uaac client add  \
-       --name devconnect&#95;admin&#95;client \
+       --name devconnect&#95;foundationName&#95;admin&#95;client \
        --authorized&#95;grant&#95;types client&#95;credentials \
        --authorities cloud&#95;controller.admin <br>
        New client secret:  *****
@@ -177,7 +203,7 @@ To create Authorization Code client credentials for <%= vars.product_short %>:
 
     ```
     uaac client add \
-      --name devconnect_foundation_auth_client \
+      --name devconnect_<FOUNDATION-NAME>_auth_client \
       --scope openid --authorized_grant_types authorization_code \
       --redirect_uri https://DEVCONNECT-ROUTE/api/v1/foundations/FOUNDATION-UUID/oauth2
     ```
@@ -191,7 +217,7 @@ To create Authorization Code client credentials for <%= vars.product_short %>:
     For example:
 
     <pre class="terminal">$ uaac client add \
-        --name devconnect&#95;foundation&#95;auth&#95;client \
+        --name devconnect&#95;foundationName&#95;auth&#95;client \
         --scope openid --authorized&#95;grant&#95;types authorization&#95;code \
         --redirect&#95;uri https://DEVCONNECT-ROUTE/api/v1/foundations/FOUNDATION-UUID/oauth2</pre>
 
