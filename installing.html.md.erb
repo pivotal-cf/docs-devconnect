@@ -29,7 +29,7 @@ Before you install <%= vars.product_short %>, you must have:
 
 - Followed the procedures in [Preparing <%= vars.product_full %> for Deployment](./preparing.html).
 - A <%= vars.app_runtime_abbr %> installation with the binary buildpack installed.
-- A private container registry. VMware recommends using the VMware Tanzu container registry.
+- A private container registry. VMware recommends using the private container registry provided by VMware.
 - The Docker ClI. See the [Docker website](https://www.docker.com/get-started).
 
 ## <a id="manifest"></a> Create the App Manifest
@@ -116,7 +116,7 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
       <tr>
         <td><code>DEVCONNECT-REGISTRY</code></td>
         <td>The private container registry for the <%= vars.product_short %> image.<br><br>
-          For example, if you are using the VMware Tanzu registry:
+          For example, if you are using the provided private container registry:
             <code>registry.pivotal.io/developer-connect/developer-connect</code>
           </td>
       </tr>
@@ -124,7 +124,7 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
       <tr>
         <td><code>DEVCONNECT-REGISTRY-USERNAME</code></td>
         <td>The username for the private container registry for the <%= vars.product_short %> image.<br><br>
-            For example, if you are using the VMware Tanzu registry, this is the username you use
+            For example, if you are using the provided private container registry, this is the username you use
             to log in to <%= vars.product_network %>.</td>
       </tr>
 
@@ -706,4 +706,7 @@ To push the <%= vars.product_short %> app:
     CF_DOCKER_PASSWORD=DEVCONNECT-REGISTRY-PASSWORD  \
     cf push -f devconnect-manifest.yml --vars-file devconnect-vars.yml
     ```
-    Where `DEVCONNECT-REGISTRY-PASSWORD` is the password for your private container registry. You should only include this environment variable if your registry requires a password. For example, if you are using the VMware Tanzu registry, this is the password you use to log in to <%= vars.product_network %>.
+    Where `DEVCONNECT-REGISTRY-PASSWORD` is the password for your private container registry.
+    You should only include this environment variable if your registry requires a password.
+    For example, if you are using the provided private container registry,
+    this is the password you use to log in to <%= vars.product_network %>.
