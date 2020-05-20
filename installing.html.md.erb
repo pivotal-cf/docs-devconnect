@@ -98,7 +98,6 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
     ---
     devconnect-image-location: DEVCONNECT-REGISTRY
     devconnect-image-registry-username: DEVCONNECT-REGISTRY-USERNAME
-    WHAT IS THE KEY FOR THIS?: DEVCONNECT-REGISTRY-PASSWORD
     devconnect-route: DEVCONNECT-ROUTE
     devconnect-auth-client-id: LOGIN-ID
     devconnect-auth-client-secret: LOGIN-SECRET
@@ -127,15 +126,6 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
         <td>The username for the private container registry for the <%= vars.product_short %> image.<br><br>
             For example, if you are using the VMware Tanzu registry, this is the username you use
             to log in to <%= vars.product_network %>.</td>
-      </tr>
-
-      <tr>
-        <td><code>DEVCONNECT-REGISTRY-PASSWORD</code></td>
-        <td>(Optional)
-          The password for the private container registry for the <%= vars.product_short %> image.
-          You should only include this key-value pair if your registry requires a password. <br><br>
-          For example, if you are using the VMware Tanzu registry, this is the password you use
-          to log in to <%= vars.product_network %>.</td>
       </tr>
 
       <tr>
@@ -643,7 +633,6 @@ The following is a example of an configuration file:
 ---
 devconnect-image-location: DEVCONNECT-REGISTRY
 devconnect-image-registry-username: DEVCONNECT-REGISTRY-USERNAME
-WHAT IS THE KEY FOR THIS?: DEVCONNECT-REGISTRY-PASSWORD
 devconnect-route: DEVCONNECT-ROUTE
 devconnect-auth-client-id: LOGIN-ID
 devconnect-auth-client-secret: LOGIN-SECRET
@@ -701,13 +690,6 @@ devconnect-entitlements-config: |
 
 To push the <%= vars.product_short %> app:
 
-1. Log in to the private container registry by [DOING A THING]
-
-1. Download the <%= vars.product_short %> container image by running:
-
-    ```
-    docker pull registry.pivotal.io/developer-connect/developer-connect:latest
-    ```
 1. Target your CAPI endpoint by running:
 
     ```
@@ -724,4 +706,4 @@ To push the <%= vars.product_short %> app:
     CF_DOCKER_PASSWORD=DEVCONNECT-REGISTRY-PASSWORD  \
     cf push -f devconnect-manifest.yml --vars-file devconnect-vars.yml
     ```
-    Where `DEVCONNECT-REGISTRY-PASSWORD` is the password you use to log in to <%= vars.product_network %>.
+    Where `DEVCONNECT-REGISTRY-PASSWORD` is the password for your private container registry. You should only include this environment variable if your registry requires a password. For example, if you are using the VMware Tanzu registry, this is the password you use to log in to <%= vars.product_network %>.
