@@ -700,13 +700,17 @@ To push the <%= vars.product_short %> app:
     ```
     cf login
     ```
+1. If your private container registry requires a password,
+    set an environment variable by running:
+
+    ```
+    CF_DOCKER_PASSWORD=DEVCONNECT-REGISTRY-PASSWORD
+    ```
+      Where `DEVCONNECT-REGISTRY-PASSWORD` is the password for your private container registry.
+      For example, if you are using the provided private container registry,
+      this is the password you use to log in to <%= vars.product_network %>.
 1. Push <%= vars.product_short %> by running:
 
     ```
-    CF_DOCKER_PASSWORD=DEVCONNECT-REGISTRY-PASSWORD  \
     cf push -f devconnect-manifest.yml --vars-file devconnect-vars.yml
     ```
-    Where `DEVCONNECT-REGISTRY-PASSWORD` is the password for your private container registry.<br><br>
-    You should only include this environment variable if your registry requires a password.
-    For example, if you are using the provided private container registry,
-    this is the password you use to log in to <%= vars.product_network %>.
