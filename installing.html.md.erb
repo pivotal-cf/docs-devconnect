@@ -11,7 +11,7 @@ This topic describes how to install <%= vars.product_full %> on <%= vars.app_run
 
 To install <%= vars.product_short %> on <%= vars.app_runtime_abbr %>
 you must configure an app manifest and variable file for <%= vars.product_short %>.
-After you configure the files, you must push the <%= vars.product_short %> to <%= vars.app_runtime_abbr %>.
+After you configure the files, you must push the <%= vars.product_short %> app to <%= vars.app_runtime_abbr %>.
 
 If you want to install <%= vars.product_short %> on Kubernetes instead,
 follow the procedure in
@@ -28,9 +28,9 @@ To install <%= vars.product_short %> on <%= vars.app_runtime_abbr %>:
 Before you install <%= vars.product_short %>, you must have:
 
 - Followed the procedures in [Preparing <%= vars.product_full %> for Deployment](./preparing.html).
-- A <%= vars.app_runtime_abbr %> installation with the binary buildpack installed.
-- A private container registry. VMware recommends using the private container registry provided by VMware.
-- The Docker ClI. See the [Docker website](https://www.docker.com/get-started).
+- A <%= vars.app_runtime_abbr %> deployment.
+- The Tanzu Network Registry. This is a private container image registry provided by VMware.
+- A SQL database.
 
 ## <a id="manifest"></a> Create the App Manifest
 
@@ -41,7 +41,12 @@ to reflect how to actually deploy the packaged DevConnect.  %>
 You must create an app manifest file to `cf push` <%= vars.product_short %>.<br><br>
 To create the manifest file:
 
-1. Create a manifest file named `devconnect-manifest.yml` in DIRECTORY.
+
+1. Download and unzip the <%= vars.product_short %> product file from
+[<%= vars.product_network %>](https://network.pivotal.io/products/developer-connect/).
+
+1. Create a manifest file named `devconnect-manifest.yml` at the root level of the
+<%= vars.product_short %> directory.
 
 
 1. Add the following contents to the manifest file:
@@ -80,7 +85,8 @@ for <%= vars.product_short %>.
 
 To create and configure the configuration file:
 
-1. Create a configuration file named `devconnect-vars.yml` in DIRECTORY.
+1. Create a configuration file named `devconnect-vars.yml` at the root level of the
+<%= vars.product_short %> directory.
 1. Add credentials information to the configuration file.
   See [Add <%= vars.product_short %> and Database Credentials](#config-creds) below.
 1. Add an entitlements config to the configuration file.
@@ -96,7 +102,7 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
 
     ```
     ---
-    devconnect-image-location: DEVCONNECT-REGISTRY
+    devconnect-image-location: registry.pivotal.io/developer-connect/developer-connect
     devconnect-image-registry-username: DEVCONNECT-REGISTRY-USERNAME
     devconnect-route: DEVCONNECT-ROUTE
     devconnect-auth-client-id: LOGIN-ID
@@ -114,18 +120,9 @@ To add and configure credentials for <%= vars.product_short %> and a backing dat
       </tr>
 
       <tr>
-        <td><code>DEVCONNECT-REGISTRY</code></td>
-        <td>The private container registry for the <%= vars.product_short %> image.<br><br>
-          For example, if you are using the provided private container registry:
-            <code>registry.pivotal.io/developer-connect/developer-connect</code>
-          </td>
-      </tr>
-
-      <tr>
         <td><code>DEVCONNECT-REGISTRY-USERNAME</code></td>
-        <td>The username for the private container registry for the <%= vars.product_short %> image.<br><br>
-            For example, if you are using the provided private container registry, this is the username you use
-            to log in to <%= vars.product_network %>.</td>
+        <td>Your username for Tanzu Network Registry.
+             This is the username you use to log in to <%= vars.product_network %>.</td>
       </tr>
 
       <tr>
@@ -234,8 +231,8 @@ To create and configure the `devconnect-entitlements-config` key:
     See [Add Org and Space Templates](#config-org-space) below.
 1. (Optional) Add custom template variables to the configuration file.
     See [(Optional) Add Custom Variables](#config-custom) below.
-1. Add foundation information to the configuration file.
-    See [Add Foundation Configurations](#config-foundation) below.
+1. Add <%= vars.app_runtime_abbr %> information to the configuration file.
+    See [Add <%= vars.app_runtime_abbr %> Configurations](#config-tas) below.
 
 #### <a id="config-org-space"></a> Add Org and Space Templates
 
@@ -283,7 +280,7 @@ To add and configure org and space name templates:
 
       <tr>
         <td><code>{{RegionName}}</code></td>
-        <td>The region that the foundation is located in</td>
+        <td>The region that <%= vars.app_runtime_abbr %> is located in</td>
       </tr>
 
       <tr>
@@ -362,10 +359,11 @@ To add and configure custom templates:
       characterLimit: 10
     ```
 
-#### <a id="config-foundation"></a> Add Foundation Configurations
+#### <a id="config-tas"></a> Add <%= vars.app_runtime_abbr %> Configurations
 
-You must add information for each foundation you want to add to <%= vars.product_short %>.
-You add the foundation information to a `foundations` array.
+You must add information for each <%= vars.app_runtime_abbr %> deployment
+you want to add to <%= vars.product_short %>.
+You add the <%= vars.app_runtime_abbr %> information to a `foundations` array.
 
 To add and configure the `foundations` array:
 
@@ -374,10 +372,10 @@ To add and configure the `foundations` array:
 
     ```
     foundations:
-    - name: "FOUNDATION-NAME"
-      uuid: "FOUNDATION-UUID"
-      region: "FOUNDATION-REGION"
-      apiUrl: "FOUNDATION-URL"
+    - name: "TAS-NAME"
+      uuid: "TAS-UUID"
+      region: "TAS-REGION"
+      apiUrl: "TAS-URL"
     ```
     Where:
 
@@ -389,24 +387,24 @@ To add and configure the `foundations` array:
       </tr>
 
       <tr>
-        <td><code>FOUNDATION-NAME</code></td>
-        <td>A human-readable name for the foundation.</td>
+        <td><code>TAS-NAME</code></td>
+        <td>A human-readable name for the <%= vars.app_runtime_abbr %> deployment.</td>
       </tr>
 
       <tr>
-        <td><code>FOUNDATION-UUID</code></td>
-        <td>The generated UUID for the foundation.</td>
+        <td><code>TAS-UUID</code></td>
+        <td>The generated UUID for the <%= vars.app_runtime_abbr %> deployment.</td>
       </tr>
 
       <tr>
-        <td><code>FOUNDATION-REGION</code></td>
-        <td>The region that the foundation is located in.
-          This is used to group foundations and environments together.</td>
+        <td><code>TAS-REGION</code></td>
+        <td>The region that the <%= vars.app_runtime_abbr %> deployment is located in.
+          This is used to group environments together.</td>
       </tr>
 
       <tr>
-        <td><code>FOUNDATION-URL</code></td>
-        <td>The Cloud Foundry API (CAPI) URL for the foundation.</td>
+        <td><code>TAS-URL</code></td>
+        <td>The Cloud Foundry API (CAPI) URL for the <%= vars.app_runtime_abbr %>.</td>
       </tr>
 
     </table>
@@ -475,12 +473,12 @@ To add and configure the `foundations` array:
 
     ```
     oauth:
-      authorizeUrl: https://login.sys.FOUNDATION-DOMAIN/oauth/authorize
-      tokenUrl: https://login.sys.FOUNDATION-DOMAIN/oauth/token
+      authorizeUrl: https://login.sys.SYSTEM-DOMAIN/oauth/authorize
+      tokenUrl: https://login.sys.SYSTEM-DOMAIN/oauth/token
       clientId: AUTH-CLIENT-ID
       clientSecret: AUTH-CLIENT-SECRET
-      issuerUrl: https://uaa.sys.FOUNDATION-DOMAIN/oauth/token
-      jwksUrl: https://login.sys.FOUNDATION-DOMAIN/token_keys
+      issuerUrl: https://uaa.sys.SYSTEM-DOMAIN/oauth/token
+      jwksUrl: https://login.sys.SYSTEM-DOMAIN/token_keys
       authenticationType: IDENTITY-PROVIDER
     ```
     Where:
@@ -492,10 +490,9 @@ To add and configure the `foundations` array:
       </tr>
 
       <tr>
-        <td><code>FOUNDATION-DOMAIN</code></td>
-        <td>The domain name for the foundation.<br>
-            If you are installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>,
-            this is your system domain. You can find your system domain in <%= vars.app_runtime_abbr %> tile
+        <td><code>SYSTEM-DOMAIN</code></td>
+        <td>The system domain name for the <%= vars.app_runtime_abbr %> deployment.
+            You can find your system domain in <%= vars.app_runtime_abbr %> tile
             on the <strong>Domains</strong> pane.</td>
       </tr>
 
@@ -514,8 +511,8 @@ To add and configure the `foundations` array:
 
       <tr>
         <td><code>IDENTITY-PROVIDER</code></td>
-        <td>The type of identity provider that backs the foundation.
-          <%= vars.product_short%> supports  <code>saml</code>, <code>internal</code>, and <code>ldap</code>.</td>
+        <td>The type of identity provider that backs the <%= vars.app_runtime_abbr %> UAA.
+          <%= vars.product_short%> supports <code>saml</code>, <code>internal</code>, and <code>ldap</code>.</td>
       </tr>
 
     </table>
@@ -524,7 +521,7 @@ To add and configure the `foundations` array:
     <%= vars.product_short%> uses the OAuth information to verify users for login.
         <p class="note"><strong>Note:</strong> You can retrieve these values by
           querying the UAA well-known OpenID config endpoint:
-        <code>https<span>:</span>//uaa.sys.FOUNDATION-DOMAIN/.well-known/openid-configuration</code>.
+        <code>https<span>:</span>//uaa.sys.SYSTEM-DOMAIN/.well-known/openid-configuration</code>.
         </p>
 
 1. Append the following tutorial environment information to the configuration file
@@ -535,10 +532,10 @@ To add and configure the `foundations` array:
        name: sandbox
        orgRole: auditors
        spaceRole: developers
-       quotaName: FOUNDATION-QUOTA
+       quotaName: TAS-QUOTA
     ```
-    Where `FOUNDATION-QUOTA` is the quota name that is used by the tutorial environment.
-    This quota name must exist on the foundation.
+    Where `TAS-QUOTA` is the quota name that is used by the tutorial environment.
+    This quota name must exist on the <%= vars.app_runtime_abbr %> deployment.
 
     <p class="note"><strong>Note:</strong>
       You must not include the <code>tutorialEnvironment</code> section in more than one
@@ -576,7 +573,7 @@ To add and configure the `foundations` array:
       <tr>
         <td>tutorialEnvironment.quotaName</td>
         <td>The quota name that is used by the tutorial environment.
-        This quota name must exist on the foundation. </td>
+        This quota name must exist on the <%= vars.app_runtime_abbr %> deployment. </td>
       </tr>
   </table>
 
@@ -603,7 +600,7 @@ To add and configure the `foundations` array:
 
       <tr>
         <td>environments</td>
-        <td>The list of environments on the foundation.</td>
+        <td>The list of environments on the <%= vars.app_runtime_abbr %> deployment.</td>
       </tr>
 
       <tr>
@@ -631,7 +628,7 @@ The following is a example of an configuration file:
 
 ```
 ---
-devconnect-image-location: DEVCONNECT-REGISTRY
+devconnect-image-location: registry.pivotal.io/developer-connect/developer-connect
 devconnect-image-registry-username: DEVCONNECT-REGISTRY-USERNAME
 devconnect-route: DEVCONNECT-ROUTE
 devconnect-auth-client-id: LOGIN-ID
@@ -654,10 +651,10 @@ devconnect-entitlements-config: |
       displayText: CUSTOM-VAR-DISPLAY-TEXT
       characterLimit: CHAR-LIMIT
     foundations:
-      - name: "FOUNDATION-NAME"
-        uuid: "FOUNDATION-UUID"
-        region: "FOUNDATION-REGION"
-        apiUrl: "FOUNDATION-URL"
+      - name: "TAS-NAME"
+        uuid: "TAS-UUID"
+        region: "TAS-REGION"
+        apiUrl: "TAS-URL"
       cfMgmtRepo:
         configDir: CONFIG-DIRECTORY
         repoUrl: REPO-SSH-URL
@@ -665,18 +662,18 @@ devconnect-entitlements-config: |
           PRIVATE-KEY
         privateKeyPassPhrase: PASSWORD
       oauth:
-        authorizeUrl: https://login.sys.FOUNDATION-DOMAIN/oauth/authorize
-        tokenUrl: https://login.sys.FOUNDATION-DOMAIN/oauth/token
+        authorizeUrl: https://login.sys.SYSTEM-DOMAIN/oauth/authorize
+        tokenUrl: https://login.sys.SYSTEM-DOMAIN/oauth/token
         clientId: AUTH-CLIENT-ID
         clientSecret: AUTH-CLIENT-SECRET
-        issuerUrl: https://uaa.sys.FOUNDATION-DOMAIN/oauth/token
-        jwksUrl: https://login.sys.FOUNDATION-DOMAIN/token_keys
+        issuerUrl: https://uaa.sys.SYSTEM-DOMAIN/oauth/token
+        jwksUrl: https://login.sys.SYSTEM-DOMAIN/token_keys
         authenticationType: IDENTITY-PROVIDER
       tutorialEnvironment:
          name: sandbox
          orgRole: auditors
          spaceRole: developers
-         quotaName: FOUNDATION-QUOTA
+         quotaName: TAS-QUOTA
       environments:
       - name: dev
         orgRole: auditors
@@ -700,15 +697,19 @@ To push the <%= vars.product_short %> app:
     ```
     cf login
     ```
-1. If your private container registry requires a password,
-    set an environment variable by running:
+
+1. Target the org and space for the <%= vars.product_short %> app by running:
+
+    ```
+    cf target -o ORG -s SPACE
+    ```
+1. Set an environment variable by running:
 
     ```
     CF_DOCKER_PASSWORD=DEVCONNECT-REGISTRY-PASSWORD
     ```
-      Where `DEVCONNECT-REGISTRY-PASSWORD` is the password for your private container registry.
-      For example, if you are using the provided private container registry,
-      this is the password you use to log in to <%= vars.product_network %>.
+      Where `DEVCONNECT-REGISTRY-PASSWORD` is the password for Tanzu Network Registry.
+      This is the password you use to log in to <%= vars.product_network %>.
 1. Push <%= vars.product_short %> by running:
 
     ```

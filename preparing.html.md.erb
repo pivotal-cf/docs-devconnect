@@ -10,13 +10,13 @@ This topic describes how to prepare <%= vars.product_full %> for installation.
 ## <a id="Overview"></a> Overview
 
 To install <%= vars.product_short %> you must create and configure UAA clients
-to enable <%= vars.product_short %> to connect to your foundations.
+to enable <%= vars.product_short %> to connect to your <%= vars.app_runtime_abbr %> deployments.
 
 To configure <%= vars.product_short %>:
 
 1. [Configure a <%= vars.product_short %> IdP](#idp)
 
-1. [Configure the Foundation UAAs](#foundation-uaa)
+1. [Configure the <%= vars.app_runtime_abbr %> UAAs](#tas-uaa)
 
 
 After you prepare <%= vars.product_short %>, you can install <%= vars.product_short %> on
@@ -31,25 +31,25 @@ follow the procedure in
 
 Before you configure <%= vars.product_short %>, you must have:
 
-- A generated UUID string for each foundation you want to configure.
-  <%= vars.product_short %> uses this UUID to identify your foundation.
+- A generated UUID string for each <%= vars.app_runtime_abbr %> deployment  you want to configure.
+  <%= vars.product_short %> uses this UUID to identify your <%= vars.app_runtime_abbr %> deployment .
   You can create an arbitrary UUID but you must use the same value throughout the configuration. <br><br>
   You can use a tool such as `uuidgen` to generate random UUIDs.
   For more information, see the [man7 website](http://man7.org/linux/man-pages/man1/uuidgen.1.html).
 - A route for accessing the <%= vars.product_short %> server.
 - The User Account and Authentication Command Line Interface (UAAC).
   See [cf-uaac](https://github.com/cloudfoundry/cf-uaac) in GitHub.
-- One or more running foundations managed by Cloud Foundry Management (cf-mgmt).
+- One or more running <%= vars.app_runtime_abbr %> deployments managed by Cloud Foundry Management (cf-mgmt).
   See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
 
 ## <a id="idp"></a>Configure a <%= vars.product_short %> IdP
 
 <%= vars.product_short %> requires an OpenID Connect (OIDC) OAuth2 provider.
-In the following procedure, VMware refers to this provider as
+The following procedure refers to this provider as
 a <%= vars.product_short %> identity provider (IdP).
 
 The user accounts you configure for the <%= vars.product_short %> IdP
-must have the same username and email as the user accounts for each foundation UAA.
+must have the same username and email as the user accounts for each <%= vars.app_runtime_abbr %> UAA.
 
 VMware recommends you configure your <%= vars.product_short %> IdP
 and all of your <%= vars.app_runtime_abbr %> UAAs with one SAML or LDAP IdP.
@@ -60,7 +60,7 @@ You can use the following as a <%= vars.product_short %> IdP:
 
 - A Single Sign-On for VMware Tanzu instance.
   See [Single Sign-On for VMware Tanzu](https://docs.pivotal.io/p-identity/).
-- A UAA instance on an existing foundation.
+- A UAA instance on an existing <%= vars.app_runtime_abbr %> deployment.
 - A standalone UAA instance.
   For instructions on how to create a standalone UAA instance,
   see the [Cloud Foundry documentation](https://docs.cloudfoundry.org/concepts/architecture/uaa.html#quickstart).
@@ -121,21 +121,20 @@ To configure a UAA instance for <%= vars.product_short %>:
 1. Verify the authorization base URL of the UAA instance by querying:
 
     ```
-    https://uaa.sys.FOUNDATION-DOMAIN/.well-known/openid-configuration
+    https://uaa.sys.SYSTEM-DOMAIN/.well-known/openid-configuration
     ```
-    Where `FOUNDATION-DOMAIN` is the domain for your foundation UAA instance.<br>
-    If you are installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>,
-    this is your system domain. You can find your system domain in **<%= vars.app_runtime_abbr %>** tile
+    Where `SYSTEM-DOMAIN` is the domain for your <%= vars.app_runtime_abbr %> UAA instance.
+    You can find your system domain in **<%= vars.app_runtime_abbr %>** tile
     on the **Domains** pane.
 
 1. Record the authorization base URL. The base URL is the host that provides the well-known OpenID configuration.
 You use this value in [Add <%= vars.product_short %> and Database Credentials](./installing.html#config-creds) in
    _Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
 
-## <a id="foundation-uaa"></a>Configure the Foundation UAAs
+## <a id="tas-uaa"></a>Configure the <%= vars.app_runtime_abbr %> UAAs
 
-To add a foundation to <%= vars.product_short %> you must configure
-a client with the Authorization Code grant type with the `openid` scope on the foundation UAA.
+To add a <%= vars.app_runtime_abbr %> deployment to <%= vars.product_short %> you must configure
+a client with the Authorization Code grant type with the `openid` scope on the <%= vars.app_runtime_abbr %> UAA.
 
 <%= vars.product_short %> uses this grant type to:
 
@@ -146,36 +145,34 @@ a client with the Authorization Code grant type with the `openid` scope on the f
 
 <%= vars.product_short %> needs Authorization Code credentials to
 authenticate and authorize users using the <%= vars.product_short %> IdP.
-You must follow the procedure in this section for each foundation you want to add to <%= vars.product_short %>.
+You must follow the procedure in this section for each <%= vars.app_runtime_abbr %>
+deployment you want to add to <%= vars.product_short %>.
 
 To create Authorization Code client credentials for <%= vars.product_short %>:
 
 
-1. Target the foundation UAA instance by running:
+1. Target the <%= vars.app_runtime_abbr %> UAA instance by running:
 
     ```
-    uaac target uaa.FOUNDATION-DOMAIN
+    uaac target uaa.SYSTEM-DOMAIN
     ```
 
-    Where `FOUNDATION-DOMAIN` is the domain for your foundation UAA instance.<br>
-    If you are installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>,
-    this is your system domain. You can find your system domain in **<%= vars.app_runtime_abbr %>** tile
+    Where `SYSTEM-DOMAIN` is the domain for your <%= vars.app_runtime_abbr %> UAA instance.
+    You can find your system domain in **<%= vars.app_runtime_abbr %>** tile
     on the **Domains** pane.
 
-1. Login with your foundation admin client credentials by running
+1. Login with your <%= vars.app_runtime_abbr %> admin client credentials by running
 
     ```
-    uaac token client get FOUNDATION-ADMIN-CLIENT -s FOUNDATION-ADMIN-SECRET
+    uaac token client get TAS-ADMIN-CLIENT -s TAS-ADMIN-SECRET
     ```
 
     Where:
-    + `FOUNDATION-ADMIN-CLIENT` is the admin client ID for your foundation UAA instance.<br>
-        If you are installing <%= vars.product_short %>,
-        you can find your client ID in **<%= vars.app_runtime_abbr %>** tile on the **Credentials tab** tab
+    + `TAS-ADMIN-CLIENT` is the admin client ID for your <%= vars.app_runtime_abbr %> UAA instance.
+        You can find your client ID in **<%= vars.app_runtime_abbr %>** tile on the **Credentials** tab
         under **UAA Admin Credentials**.
-    + `FOUNDATION-ADMIN-SECRET` is the admin client secret for your foundation UAA instance.<br>
-        If you are installing <%= vars.product_short %>,
-        you can find your client secret in **<%= vars.app_runtime_abbr %>** tile on the **Credentials tab** tab
+    + `TAS-ADMIN-SECRET` is the admin client secret for your <%= vars.app_runtime_abbr %> UAA instance.
+        You can find your client secret in **<%= vars.app_runtime_abbr %>** tile on the **Credentials** tab
         under **UAA Admin Credentials**.
 
 
@@ -183,29 +180,29 @@ To create Authorization Code client credentials for <%= vars.product_short %>:
 
     ```
     uaac client add \
-      --name devconnect_FOUNDATION-NAME_auth_client \
+      --name devconnect_TAS-NAME_auth_client \
       --scope openid --authorized_grant_types authorization_code \
-      --redirect_uri https://DEVCONNECT-ROUTE/api/v1/foundations/FOUNDATION-UUID/oauth2
+      --redirect_uri https://DEVCONNECT-ROUTE/api/v1/foundations/TAS-UUID/oauth2
     ```
 
     Where:
-    + `FOUNDATION-NAME` is the name of your foundatoin
+    + `TAS-NAME` is the name of your foundatoin
     + `DEVCONNECT-ROUTE` is the route for accessing the <%= vars.product_short %> server.
-    + `FOUNDATION-UUID` is the generated UUID for the foundation.
+    + `TAS-UUID` is the generated UUID for the <%= vars.app_runtime_abbr %>.
 
     When prompted, enter a secret for the authorization client. <br>
 
     For example:
 
     <pre class="terminal">$ uaac client add \
-        --name devconnect&#95;foundation1&#95;auth&#95;client \
+        --name devconnect&#95;deployment1&#95;auth&#95;client \
         --scope openid --authorized&#95;grant&#95;types authorization&#95;code \
-        --redirect&#95;uri https://DEVCONNECT-ROUTE/api/v1/foundations/FOUNDATION-UUID/oauth2</pre>
+        --redirect&#95;uri https://my-dev-connect/api/v1/foundations/12345678-90ab-cdef-1234-567890abcdef/oauth2</pre>
 
 
 1. Record the following values from the above command:
     * The authorization client ID.
     * The authorization client secret. This is secret you entered. <br><br>
     You use these values in
-    [Add Foundation Configurations](./installing.html#config-foundation) in
+    [Add <%= vars.app_runtime_abbr %> Configurations](./installing.html#config-tas) in
     _Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
