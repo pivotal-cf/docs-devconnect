@@ -118,10 +118,10 @@ To configure a UAA instance for <%= vars.product_short %>:
     You use these values in
     [Add <%= vars.product_short %> and Database Credentials](./installing.html#config-creds) in
     _Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
-1. Verify the authorization base URL of the UAA instance by querying:
+1. Verify the authorization base URL by navigating to the following URL in a browser:
 
     ```
-    https://uaa.sys.SYSTEM-DOMAIN/.well-known/openid-configuration
+    https://uaa.SYSTEM-DOMAIN/.well-known/openid-configuration
     ```
     Where `SYSTEM-DOMAIN` is the domain for your <%= vars.app_runtime_abbr %> UAA instance.
     You can find your system domain in **<%= vars.app_runtime_abbr %>** tile

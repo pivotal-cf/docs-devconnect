@@ -473,12 +473,12 @@ To add and configure the `foundations` array:
 
     ```
     oauth:
-      authorizeUrl: https://login.sys.SYSTEM-DOMAIN/oauth/authorize
-      tokenUrl: https://login.sys.SYSTEM-DOMAIN/oauth/token
+      authorizeUrl: https://login.SYSTEM-DOMAIN/oauth/authorize
+      tokenUrl: https://login.SYSTEM-DOMAIN/oauth/token
       clientId: AUTH-CLIENT-ID
       clientSecret: AUTH-CLIENT-SECRET
-      issuerUrl: https://uaa.sys.SYSTEM-DOMAIN/oauth/token
-      jwksUrl: https://login.sys.SYSTEM-DOMAIN/token_keys
+      issuerUrl: https://uaa.SYSTEM-DOMAIN/oauth/token
+      jwksUrl: https://login.SYSTEM-DOMAIN/token_keys
       authenticationType: IDENTITY-PROVIDER
     ```
     Where:
@@ -520,8 +520,9 @@ To add and configure the `foundations` array:
 
     <%= vars.product_short%> uses the OAuth information to verify users for login.
         <p class="note"><strong>Note:</strong> You can retrieve these values by
-          querying the UAA well-known OpenID config endpoint:
-        <code>https<span>:</span>//uaa.sys.SYSTEM-DOMAIN/.well-known/openid-configuration</code>.
+          navigating to the UAA well-known OpenID config endpoint in a browser.
+          The endpoint uses the following format:<br>
+        <code>https<span>:</span>//uaa.SYSTEM-DOMAIN/.well-known/openid-configuration</code>.
         </p>
 
 1. Append the following tutorial environment information to the configuration file
@@ -662,12 +663,12 @@ devconnect-entitlements-config: |
           PRIVATE-KEY
         privateKeyPassPhrase: PASSWORD
       oauth:
-        authorizeUrl: https://login.sys.SYSTEM-DOMAIN/oauth/authorize
-        tokenUrl: https://login.sys.SYSTEM-DOMAIN/oauth/token
+        authorizeUrl: https://login.SYSTEM-DOMAIN/oauth/authorize
+        tokenUrl: https://login.SYSTEM-DOMAIN/oauth/token
         clientId: AUTH-CLIENT-ID
         clientSecret: AUTH-CLIENT-SECRET
-        issuerUrl: https://uaa.sys.SYSTEM-DOMAIN/oauth/token
-        jwksUrl: https://login.sys.SYSTEM-DOMAIN/token_keys
+        issuerUrl: https://uaa.SYSTEM-DOMAIN/oauth/token
+        jwksUrl: https://login.SYSTEM-DOMAIN/token_keys
         authenticationType: IDENTITY-PROVIDER
       tutorialEnvironment:
          name: sandbox
