@@ -30,7 +30,8 @@ Before you install <%= vars.product_short %>, you must have:
 - Followed the procedures in [Preparing <%= vars.product_full %> for Deployment](./preparing.html).
 - A <%= vars.app_runtime_abbr %> deployment.
 - Access to the Tanzu Network Registry. This is a private container image registry provided by VMware.
-- A SQL database.
+- A SQL database. You can use the VMware Tanzu SQL [MySQL] tile for a database.
+  See [VMware Tanzu SQL [MySQL]](https://docs.pivotal.io/p-mysql/).
 
 ## <a id="manifest"></a> Create the App Manifest
 
@@ -520,8 +521,7 @@ To add and configure the `foundations` array:
 
     <%= vars.product_short%> uses the OAuth information to verify users for login.
         <p class="note"><strong>Note:</strong> You can retrieve these values by
-          navigating to the UAA well-known OpenID config endpoint in a browser.
-          The endpoint uses the following format:<br>
+          navigating to the following endpoint:<br>
         <code>https<span>:</span>//uaa.SYSTEM-DOMAIN/.well-known/openid-configuration</code>.
         </p>
 
