@@ -83,9 +83,11 @@ The following table provides version and version-support information about PRODU
 
 <%= vars.product_full %> includes the following key features:
 
-* Feature one
-* Feature two
-* Feature three
++ Allows platform engineers to define provisioning standards and constraints to keep provisioned environments consistent
++ Provides a tutorial that walks developers through how to create a project and self-provision development environments
++ Allows developers to self-provision and associate multiple environments (across multiple regions) to a project
++ Provides details on how to deploy code to each environment
++ Integrates with `cf-mgmt` to create and modify CloudFoundry orgs, spaces, and quotas
 
 **Note**: The above feature list should appear under **FEATURES** in the tile's listing on
 [Pivotal Network](http://network.pivotal.io).
@@ -100,13 +102,16 @@ A specific requirement might be something like, "Packaging Dependencies for Offl
 
 <%= vars.product_full %> has the following requirements:
 
-+ PREREQUISITE-1
-
-+ PREREQUISITE-2
++ One or more `cf-mgmt` managed PCF foundations
++ Though not an explicit requirement, it is highly recommended all PCF foundations are backed by the same SAML or LDAP provider
 
 ## <a id="limitations"></a>Limitations
 
 **List any known limitations.**
+
++ The feature to have multiple developers within a project is still under development
++ Getting details and credentials to deploy code via CI/CD pipeline is currently unavailable
++ Modifying/Deleting existing environments or projects requires manual intervention by a platform architect
 
 ## <a id="terms"></a><%= vars.product_short %> Terminology
 
@@ -135,6 +140,10 @@ A specific requirement might be something like, "Packaging Dependencies for Offl
 + **Dashboard:** The <%= vars.product_short %> dashboard displays the projects and the corresponding environments that
     operators have created.
 
+
+## <a id="support"></a>Support
+
+Should you require support for <%= vars.product_full %> or CF-Mgmt, you can send an e-mail to the [<%= vars.product_short %> team](mailto:devconnect@vmware.com).
 
 ## <a id="feedback"></a>Feedback
 
