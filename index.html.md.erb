@@ -151,6 +151,14 @@ projects without a manual platform operator intervention.
 + **Dashboard:** The <%= vars.product_short %> dashboard displays the projects and the corresponding environments that
     operators have created.
 
+## <a id="cf-mgmt"></a> About `cf-mgmt`
+
+### What is `cf-mgmt`?
+`cf-mgmt` is automation tooling for declaratively configuring orgs, spaces, users on a TAS for VMs instance. More information can be found in the [cf-mgmt README](https://github.com/vmwarepivotallabs/cf-mgmt#cloud-foundry-management-cf-mgmt).
+
+### How <%= vars.product_full %> Uses `cf-mgmt`
+
+<%= vars.product_short %> uses `cf-mgmt` as the source of truth for a TAS instance's topology. By configuring <%= vars.product_short %> to consume multiple `cf-mgmt` configuration repositories it is able to provision environments across multiple TAS for VMs instances.
 
 ## <a id="support"></a>Support
 
