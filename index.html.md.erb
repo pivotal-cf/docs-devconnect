@@ -25,13 +25,15 @@ Don't focus only on the overview of your product that is being integrated.
 See below for an example.** %>
 
 ```
-The Apigee Edge Service Broker for Pivotal Platform registers a service broker with Pivotal Platform and exposes its service plans on the
-Marketplace. Developers can then create service plan instances using Apps Manager or the Cloud Foundry Command
+The Apigee Edge Service Broker for Pivotal Platform registers a service broker with Pivotal Platform
+and exposes its service plans on the Marketplace.
+Developers can then create service plan instances using Apps Manager or the Cloud Foundry Command
 Line Interface (cf CLI) and bind them to their apps.
 
-Creating an Apigee Edge for Pivotal Platform service instance and binding it to an app creates an Apigee Edge API proxy that
-handles requests for the app. This lets developers use the Apigee Edge management console to manage API request
-handling between clients and the app.
+Creating an Apigee Edge for Pivotal Platform service instance and binding it to an app creates an
+Apigee Edge API proxy that handles requests for the app.
+This lets developers use the Apigee Edge management console to manage API request handling between
+clients and the app.
 ```
 
 <!-- **Note**: This overview should appear under **OVERVIEW**, combined with the prior description above in the tile's listing on
@@ -57,15 +59,15 @@ The following table provides version and version-support information about PRODU
         <td>YOUR-SOFTWARE-COMPONENT-VERSION-NUMBER</td>
     </tr>
     <tr>
-        <td>Compatible Ops Manager version(s)</td>
+        <td>Compatible <%= vars.ops_manager %> version(s)</td>
         <td>YOUR-COMPATIBLE-OPS-MAN-VERSION (Ex. 2.5, 2.6, and 2.7)</td>
     </tr>
     <tr>
-        <td>Compatible Pivotal Application Service version(s)</td>
+        <td>Compatible <%= vars.app_runtime_full %> version(s)</td>
         <td>YOUR-COMPATIBLE-PIVOTAL-APPLICATION-SERVICE-VERSION (Ex. 2.5, 2.6, and 2.7)</td>
     </tr>
         <tr>
-        <td>Compatible Pivotal Application Service for Windows version(s)</td>
+        <td>Compatible <%= vars.app_runtime_full %> for Windows version(s)</td>
         <td>YOUR-COMPATIBLE-PIVOTAL-APPLICATION-SERVICE-VERSION (Ex. 2.5, 2.6, and 2.7)</td>
     </tr>
     <tr>
@@ -83,19 +85,18 @@ The following table provides version and version-support information about PRODU
 
 <%= vars.product_full %> includes the following key features:
 
-+ Allows platform engineers to define provisioning standards and 
++ Allows platform engineers to define provisioning standards and
 constraints to keep provisioned environments consistent.
 
-+ Provides a tutorial that shows developers how to create 
++ Provides a tutorial that shows developers how to create
 a project and self-provision development environments.
 
-+ Allows developers to self-provision environments and associate multiple 
++ Allows developers to self-provision environments and associate multiple
 environments to a project across multiple regions.
 
-+ Provides details on how to deploy code to each environment.
++ Provides details about how to deploy code to each environment.
 
-+ Integrates with `cf-mgmt` to create and modify Cloud Foundry 
-orgs, spaces, and quotas.
++ Integrates with `cf-mgmt` to create and modify Cloud Foundry orgs, spaces, and quotas.
 
 
 ## <a id="reqs"></a>Requirements
@@ -115,13 +116,13 @@ A specific requirement might be something like, "Packaging Dependencies for Offl
 
 <%= vars.product_full %> has the following limitations:
 
-+ You cannot have multiple developers within a project. 
++ You cannot have multiple developers within a project.
 The feature is currently unsupported.
 
-+ You cannot retrieve details and credentials to deploy 
++ You cannot retrieve details and credentials to deploy
 code with a CI/CD pipeline.
 
-+ You cannot modify or delete existing environments or 
++ You cannot modify or delete existing environments or
 projects without a manual platform operator intervention.
 
 ## <a id="terms"></a><%= vars.product_short %> Terminology
@@ -138,7 +139,7 @@ projects without a manual platform operator intervention.
 
 + **Project:** This is a collection of environments across one or more foundations.
     This organizational structure enables you to view all the regions where you can deploy your apps.<br><br>
-    For example, you may have a project with the following environments:
+    For example, you can have a project with the following environments:
 
     * Two production environments, one in `us-west` and another in `us-east` for high availability
     * One staging environment in `us-west`
@@ -151,18 +152,20 @@ projects without a manual platform operator intervention.
 + **Dashboard:** The <%= vars.product_short %> dashboard displays the projects and the corresponding environments that
     operators have created.
 
-## <a id="cf-mgmt"></a> About `cf-mgmt`
+## <a id="cf-mgmt"></a> About cf-mgmt
 
-### What is `cf-mgmt`?
-`cf-mgmt` is automation tooling for declaratively configuring orgs, spaces, users on a TAS for VMs instance. More information can be found in the [cf-mgmt README](https://github.com/vmwarepivotallabs/cf-mgmt#cloud-foundry-management-cf-mgmt).
+`cf-mgmt` is automation tooling for declaratively configuring orgs, spaces, and users on a
+<%= vars.app_runtime_abbr %> instance. For more information, see [cf-mgmt README](https://github.com/vmwarepivotallabs/cf-mgmt#cloud-foundry-management-cf-mgmt).
 
-### How <%= vars.product_full %> Uses `cf-mgmt`
-
-<%= vars.product_short %> uses `cf-mgmt` as the source of truth for a TAS instance's topology. By configuring <%= vars.product_short %> to consume multiple `cf-mgmt` configuration repositories it is able to provision environments across multiple TAS for VMs instances.
+<%= vars.product_short %> uses `cf-mgmt` as the source of truth for a <%= vars.app_runtime_abbr %>
+instance's topology. By configuring <%= vars.product_short %> to consume multiple `cf-mgmt`
+configuration repositories it is able to provision environments across multiple
+<%= vars.app_runtime_abbr %> instances.
 
 ## <a id="support"></a>Support
 
-For <%= vars.product_full %> or `cf-mgmt` support, send an email to the [<%= vars.product_short %> team](mailto:devconnect@vmware.com).
+For <%= vars.product_full %> or `cf-mgmt` support, send an email to the
+[<%= vars.product_short %> team](mailto:devconnect@vmware.com).
 
 ## <a id="feedback"></a>Feedback
 
