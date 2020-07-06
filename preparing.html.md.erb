@@ -22,7 +22,7 @@ To configure <%= vars.product_short %>:
 
 After you prepare <%= vars.product_short %>, you can install <%= vars.product_short %> on
  <%= vars.app_runtime_abbr %> by following
-the procedures in [Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>](./installing.html).
+the procedures in [Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>](./installing-tas-vms.html).
 
 To install <%= vars.product_short %> on Kubernetes instead,
 follow the procedure in
@@ -30,18 +30,25 @@ follow the procedure in
 
 ## <a id="prereq"></a>Prerequisites
 
-Before you configure <%= vars.product_short %>, you must have:
+Before you configure <%= vars.product_short %>, you must have the following components:
 
-- A generated UUID string for each <%= vars.app_runtime_abbr %> deployment  you want to configure.
+  <p class="note"><strong>Note:</strong>
+  If you are following <a href="installing-bosh-release.html">Installing Developer Connect on BOSH</a>, the components (Postgres, Routing, and UAA) are included in the BOSH release.</p>
+
+- A Postgres Database
+- A route for accessing the DevConnect server
+- A UAA instance
+
+You must also have:
+- A generated UUID string for each <%= vars.app_runtime_abbr %> deployment you want to configure.
   <%= vars.product_short %> uses this UUID to identify your <%= vars.app_runtime_abbr %> deployment.
   You can create an arbitrary UUID but you must use the same value throughout the configuration. <br><br>
   You can use a tool such as `uuidgen` to generate random UUIDs.
   For more information, see the [man7 website](http://man7.org/linux/man-pages/man1/uuidgen.1.html).
-- A route for accessing the <%= vars.product_short %> server.
 - The User Account and Authentication Command Line Client (UAAC).
   See [cf-uaac](https://github.com/cloudfoundry/cf-uaac) in GitHub.
 - One or more running <%= vars.app_runtime_abbr %> deployments managed by Cloud Foundry Management (cf-mgmt).
-  See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
+See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
 
 ## <a id="idp"></a>Configure a <%= vars.product_short %> IdP
 
@@ -72,6 +79,9 @@ https://www.pivotaltracker.com/story/show/168939821 asks us to document:
   * Add section for configuring Pivotal SSO Service %>
 
 ### <a id="devconnect-uaa"></a> Configure the <%= vars.product_short %> UAA
+   <p class="note"><strong>Note:</strong>
+   If you are installing <%= vars.product_short %> as a BOSH release, you can skip this section and go directly to <a href="#tas-uaa">Configure the <%= vars.app_runtime_abbr %> UAAs</a> as the following section is handled by the BOSH release.
+   </p>
 
 To configure a UAA instance for <%= vars.product_short %>:
 
@@ -116,7 +126,7 @@ To configure a UAA instance for <%= vars.product_short %>:
     * The login client ID. By default, this is `devconnect_login_client`.
     * The login client secret. This is secret you entered.<br><br>
     You use these values in
-    [Add <%= vars.product_short %> and Database Credentials](./installing.html#config-creds) in
+    [Add <%= vars.product_short %> and Database Credentials](./installing-tas-vms.html#config-creds) in
     _Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
 1. Verify the authorization base URL by navigating to the following URL in a browser:
 
@@ -128,7 +138,7 @@ To configure a UAA instance for <%= vars.product_short %>:
     on the **Domains** pane.
 
 1. Record the authorization base URL.
-You use this value in [Add <%= vars.product_short %> and Database Credentials](./installing.html#config-creds) in
+You use this value in [Add <%= vars.product_short %> and Database Credentials](./installing-tas-vms.html#config-creds) in
    _Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
 
 ## <a id="tas-uaa"></a>Configure the <%= vars.app_runtime_abbr %> UAAs
@@ -205,5 +215,5 @@ To create Authorization Code client credentials for <%= vars.product_short %>:
   <li>The authorization client ID.</li>
   <li>The authorization client secret. This is secret you entered.</li>
 </ul>
-You use these values in [Add <%= vars.app_runtime_abbr %> Configurations](./installing.html#config-tas) in
+You use these values in [Add <%= vars.app_runtime_abbr %> Configurations](./installing-tas-vms.html#config-tas) in
 _Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
