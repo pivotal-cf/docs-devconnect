@@ -1,0 +1,442 @@
+---
+title: Configuring Entitlements for <%= vars.product_full %>
+owner: DevConnect
+---
+
+<strong><%= modified_date %></strong>
+
+This topic describes how to configure <%= vars.product_full %> entitlements to enable <%= vars.product_full %> to utilize multiple TAS instances.
+
+# Overview
+
+  The entitlements config contains configuration information that devconnect uses to operate on <%= vars.app_runtime_abbr %>. It must be provided in order for DevConnect to run. Different methods of DevConnect installations may specify these properties in an environment variable, form fields or properties in a manifest yml. This page lists all the properties of entitlements config and their meaning.
+
+The entitlements config have the following parts
+1. [Org and Space Templates](#config-org-space)
+1. (Optional) [Custom Template Variables](#config-custom)
+1. [<%= vars.app_runtime_abbr %> Configurations](#config-tas)
+
+Here is an [Example Entitlements Configuration](#example-config)
+
+## <a id="config-org-space"></a> Org and Space Templates
+
+You must configure templates for the org and space names that <%= vars.product_short%> creates for new projects.
+To configure the templates, use the `orgNameTemplate` and `spaceNameTemplate` keys.
+
+To add and configure org and space name templates:
+
+1. Append the following template variables to the entitlements config
+
+    ```
+      orgNameTemplate: 'ORG-TEMPLATE'
+      spaceNameTemplate: 'SPACE-TEMPLATE'
+    ```
+
+1. Replace `ORG-TEMPLATE` and `SPACE-TEMPLATE` with template fields.<br>
+  The following table describes the available template fields:
+
+    <table>
+      <tr>
+        <th width=35%>Variable</th>
+        <th>Description</th>
+      </tr>
+
+      <tr>
+        <td><code>{{RandomAdjective}}</code></td>
+        <td>A randomly chosen adjective</td>
+      </tr>
+
+      <tr>
+        <td><code>{{RandomNoun}}</code></td>
+        <td>A randomly chosen noun</td>
+      </tr>
+
+      <tr>
+        <td><code>{{DeveloperUsername}}</code></td>
+        <td>The username of the developer creating the project</td>
+      </tr>
+
+      <tr>
+        <td><code>{{DeveloperEmail}}</code></td>
+        <td>The email address of the developer creating the project</td>
+      </tr>
+
+      <tr>
+        <td><code>{{RegionName}}</code></td>
+        <td>The region that <%= vars.app_runtime_abbr %> is located in</td>
+      </tr>
+
+      <tr>
+        <td><code>{{EnvironmentName}}</code></td>
+        <td>The name of the environment</td>
+      </tr>
+
+      <tr>
+        <td><code>{{ProjectName}}</code></td>
+        <td>The project name the developer sets when they create the project</td>
+      </tr>
+    </table>
+    <br>
+    For example:
+
+    ```ruby
+    {{RandomAdjective}}-{{ProjectName}}-{{DeveloperUsername}}-{{EnvironmentName}}
+    ```
+
+
+## <a id="config-custom"></a> (Optional) Custom Template Variables
+
+You can define custom template variables and use these variables in the `orgNameTemplate` and `spaceNameTemplate` keys.
+You can create more than one custom template.
+
+To add and configure custom templates:
+
+1. Append the following template variables to the entitlements config
+
+    ```
+    customTemplateVariables:
+    - variableName: CUSTOM-VAR
+      displayName: CUSTOM-VAR-DISPLAY
+      displayText: CUSTOM-VAR-DISPLAY-TEXT
+      characterLimit: CHAR-LIMIT
+    ```
+
+    Where:
+    <table>
+      <tr>
+        <th width="33%">Field</th>
+        <th>Description</th>
+      </tr>
+
+      <tr>
+        <td><code>CUSTOM-VAR</code></td>
+        <td>The variable name used in the <code>orgNameTemplate</code>
+          or <code>spaceNameTemplate</code> key.</td>
+      </tr>
+
+      <tr>
+        <td><code>CUSTOM-VAR-DISPLAY</code></td>
+        <td>The UI label used to identify the field.</td>
+      </tr>
+
+      <tr>
+        <td><code>CUSTOM-VAR-DISPLAY-TEXT</code></td>
+        <td> (Optional) The placeholder text shown in the UI field.</td>
+      </tr>
+
+      <tr>
+        <td><code>CHAR-LIMIT</code></td>
+        <td>The maximum number of permitted characters for a field.</td>
+      </tr>
+    </table><br>
+
+    For example:
+
+    ```
+    customTemplateVariables:
+    - variableName: CostCenter
+      displayName: Cost Center
+      displayText: Please enter your Cost Center
+      characterLimit: 10
+    ```
+
+#### <a id="config-tas"></a> <%= vars.app_runtime_abbr %> Configurations
+
+You must add information for each <%= vars.app_runtime_abbr %> deployment
+you want to add to <%= vars.product_short %>.
+You add the <%= vars.app_runtime_abbr %> information to a `foundations` array.
+
+To add and configure the `foundations` array:
+
+1. Append the following identification information to the entitlements config
+
+    ```
+    foundations:
+    - name: "TAS-NAME"
+      uuid: "TAS-UUID"
+      region: "TAS-REGION"
+      apiUrl: "TAS-URL"
+    ```
+    Where:
+
+    <table>
+      <tr>
+        <th width="28%">Placeholder</th>
+        <th>Description</th>
+      </tr>
+
+      <tr>
+        <td><code>TAS-NAME</code></td>
+        <td>A human-readable name for the <%= vars.app_runtime_abbr %> deployment.</td>
+      </tr>
+
+      <tr>
+        <td><code>TAS-UUID</code></td>
+        <td>The generated UUID for the <%= vars.app_runtime_abbr %> deployment.</td>
+      </tr>
+
+      <tr>
+        <td><code>TAS-REGION</code></td>
+        <td>The region that the <%= vars.app_runtime_abbr %> deployment is located in.
+          This is used to group environments together.</td>
+      </tr>
+
+      <tr>
+        <td><code>TAS-URL</code></td>
+        <td>The Cloud Foundry API (CAPI) URL for the <%= vars.app_runtime_abbr %>.</td>
+      </tr>
+    </table>
+
+1. Append the following `cf-mgmt` credentials information to the entitlements config
+
+    ```
+    cfMgmtRepo:
+      configDir: CONFIG-DIRECTORY
+      repoUrl: REPO-SSH-URL
+      privateKey: |
+        PRIVATE-KEY
+      privateKeyPassPhrase: PASSWORD
+    ```
+      Where:
+      <table>
+
+      <tr>
+        <th width="29%">Placeholder</th>
+        <th>Description</th>
+      </tr>
+
+      <tr>
+        <td>(Optional) <code>CONFIG-DIRECTORY</code></td>
+        <td>This is the custom name for your <code>cf-mgmt</code> configuration directory.<br><br>
+          This value overrides the default directory name that <code>cf-mgmt</code> creates when you create configuration files.
+          The default name is <code>config</code>.
+          Only include this key-value pair if the configuration directory has a different name.
+          </td>
+      </tr>
+
+      <tr>
+        <td><code>REPO-SSH-URL</code></td>
+        <td>The SSH URL for your <code>cf-mgmt</code> configuration Git repository </td>
+      </tr>
+
+      <tr>
+        <td><code>PRIVATE-KEY</code></td>
+        <td>The private key for your <code>cf-mgmt</code> configuration Git repository.</td>
+      </tr>
+
+      <tr>
+        <td>(Optional) <code>PASSWORD</code></td>
+        <td>The passphrase for your private key</td>
+      </tr>
+
+    </table>
+    <br>
+    For example:
+
+    ```
+    cfMgmtRepo:
+      configDir: alternate-config-name
+      repoUrl: git@example.com:user/repo.git
+      privateKey: |
+        -----BEGIN RSA PRIVATE KEY-----
+        abcdEFGhIKlmfdskjlfdsfsnjwjnfDHFLDKSNLfjhkldsfnlsFDFDgdj
+                  ...
+        -----END RSA PRIVATE KEY-----
+      privateKeyPassPhrase: password
+    ```
+
+1. Append the following OAuth information to the entitlements config
+
+    ```
+    oauth:
+      authorizeUrl: https://login.SYSTEM-DOMAIN/oauth/authorize
+      tokenUrl: https://login.SYSTEM-DOMAIN/oauth/token
+      clientId: AUTH-CLIENT-ID
+      clientSecret: AUTH-CLIENT-SECRET
+      issuerUrl: https://uaa.SYSTEM-DOMAIN/oauth/token
+      jwksUrl: https://login.SYSTEM-DOMAIN/token_keys
+      authenticationType: IDENTITY-PROVIDER
+    ```
+    Where:
+    <table>
+
+      <tr>
+        <th width="29%">Placeholder</th>
+        <th>Description</th>
+      </tr>
+
+      <tr>
+        <td><code>SYSTEM-DOMAIN</code></td>
+        <td>The system domain name for the <%= vars.app_runtime_abbr %> deployment.
+            You can find your system domain in <%= vars.app_runtime_abbr %> tile
+            on the <strong>Domains</strong> pane.</td>
+      </tr>
+
+      <tr>
+        <td><code>AUTH-CLIENT-ID</code></td>
+        <td>The authorization client ID you recorded in
+          <a href="./preparing.html#auth-creds">Configure Authorization Code Client Credentials</a>.
+          </td>
+      </tr>
+
+      <tr>
+        <td><code>AUTH-CLIENT-SECRET</code></td>
+        <td>The authorization client secret you recorded in
+          <a href="./preparing.html#auth-creds">Configure Authorization Code Client Credentials</a>.</td>
+      </tr>
+
+      <tr>
+        <td><code>IDENTITY-PROVIDER</code></td>
+        <td>The type of identity provider that backs the <%= vars.app_runtime_abbr %> UAA.
+          <%= vars.product_short%> supports <code>saml</code>, <code>internal</code>, and <code>ldap</code>.</td>
+      </tr>
+
+    </table>
+    <br>
+
+    <%= vars.product_short%> uses the OAuth information to verify users for login.
+        <p class="note"><strong>Note:</strong> You can retrieve these values by
+          navigating to the following endpoint:<br>
+        <code>https<span>:</span>//uaa.SYSTEM-DOMAIN/.well-known/openid-configuration</code>.
+        </p>
+
+1. Append the following tutorial environment information to the entitlements config
+
+    ```
+    tutorialEnvironment:
+       name: sandbox
+       orgRole: auditors
+       spaceRole: developers
+       quotaName: TAS-QUOTA
+    ```
+    Where `TAS-QUOTA` is the quota name that is used by the tutorial environment.
+    This quota name must exist on the <%= vars.app_runtime_abbr %> deployment.
+
+    <p class="note"><strong>Note:</strong>
+      You must not include the <code>tutorialEnvironment</code> section in more than one
+      foundation.</p>
+
+    The following table describes the tutorial environment keys:
+
+    <table>
+
+      <tr>
+        <th>Keys</th>
+        <th>Description</th>
+      </tr>
+
+      <tr>
+        <td>tutorialEnvironment</td>
+        <td>The environment that is used for the tutorial</td>
+      </tr>
+
+      <tr>
+        <td>tutorialEnvironment.name</td>
+        <td>The name of the tutorial environment</td>
+      </tr>
+
+      <tr>
+        <td>tutorialEnvironment.orgRole</td>
+        <td>The org role that is used for the tutorial environment.</td>
+      </tr>
+
+      <tr>
+        <td>tutorialEnvironment.spaceRole</td>
+        <td>The space role that is used for the tutorial environment.</td>
+      </tr>
+
+      <tr>
+        <td>tutorialEnvironment.quotaName</td>
+        <td>The quota name that is used by the tutorial environment.
+        This quota name must exist on the <%= vars.app_runtime_abbr %> deployment. </td>
+      </tr>
+  </table>
+
+1.  Append the following environments information to the entitlements config
+
+    ```
+    environments:
+    - name: dev
+      orgRole: auditors
+      spaceRole: developers
+    - name: prod
+      orgRole: auditors
+      spaceRole: auditors
+    ```
+    The following table describes the environment keys:
+
+    <table>
+
+      <tr>
+        <th>Keys</th>
+        <th>Description</th>
+      </tr>
+
+      <tr>
+        <td>environments</td>
+        <td>The list of environments on the <%= vars.app_runtime_abbr %> deployment.</td>
+      </tr>
+
+      <tr>
+        <td>environments[].name</td>
+        <td>The name of the environment</td>
+      </tr>
+
+      <tr>
+        <td>environments[].orgRole</td>
+        <td>The org role that <% vars.product_short %> assigns to the user.
+            The user is also added to the <code>users</code> group.</td>
+      </tr>
+
+      <tr>
+        <td>environments[].spaceRole</td>
+        <td>The space role that <% vars.product_short %> assigns to the user. </td>
+      </tr>
+
+    </table>
+
+
+## <a id="example-config"></a> Example Entitlements Configuration
+
+The following is a example of an entitlements configuration
+
+```
+    orgNameTemplate: 'ORG-TEMPLATE'
+    spaceNameTemplate: 'SPACE-TEMPLATE'
+    customTemplateVariables:
+    - variableName: CUSTOM-VAR
+      displayName: CUSTOM-VAR-DISPLAY
+      displayText: CUSTOM-VAR-DISPLAY-TEXT
+      characterLimit: CHAR-LIMIT
+    foundations:
+      - name: "TAS-NAME"
+        uuid: "TAS-UUID"
+        region: "TAS-REGION"
+        apiUrl: "TAS-URL"
+      cfMgmtRepo:
+        configDir: CONFIG-DIRECTORY
+        repoUrl: REPO-SSH-URL
+        privateKey: |
+          PRIVATE-KEY
+        privateKeyPassPhrase: PASSWORD
+      oauth:
+        authorizeUrl: https://login.SYSTEM-DOMAIN/oauth/authorize
+        tokenUrl: https://login.SYSTEM-DOMAIN/oauth/token
+        clientId: AUTH-CLIENT-ID
+        clientSecret: AUTH-CLIENT-SECRET
+        issuerUrl: https://uaa.SYSTEM-DOMAIN/oauth/token
+        jwksUrl: https://login.SYSTEM-DOMAIN/token_keys
+        authenticationType: IDENTITY-PROVIDER
+      tutorialEnvironment:
+         name: sandbox
+         orgRole: auditors
+         spaceRole: developers
+         quotaName: TAS-QUOTA
+      environments:
+      - name: dev
+        orgRole: auditors
+        spaceRole: developers
+      - name: prod
+        orgRole: auditors
+        spaceRole: auditors
+```
