@@ -29,35 +29,43 @@ Before you install <%= vars.product_short %>, you must have:
 
 ## <a id="manifest"></a> Create the Deployment Manifest
 
-The <%= vars.product_long %> team maintains a sample manifest that you may use
-as a starting point. To generate the sample you will need to download
-[YTT](https://get-ytt.io/).
+The <%= vars.product_long %> team maintains a sample manifest that you can use as a starting point.
 
-To generate the sample manifest, clone the
-[<%= vars.product_short %> BOSH Release Repository](https://github.com/pivotal/DevConnect-bosh-release.git)
-and run `ytt` on the `manifest` directory.
+To generate the sample manifest:
+
+1. Download [YTT](https://get-ytt.io/).
+
+1. Clone the [<%= vars.product_short %> BOSH Release Repository](https://github.com/pivotal/DevConnect-bosh-release.git).
+
+1. To run `ytt` on the `manifest` directory, run:
 
 ```
 ytt -f manifest/ > MANIFEST-FILE
 ```
 
-### <a id="installing-devconnect-without-tas"></a> Registering an Identity Provider with the <%= vars.product_short %> UAA
+### <a id="installing-devconnect-without-tas"></a> Register an Identity Provider with the <%= vars.product_short %> UAA
 
-<%= vars.product_short %> uses the [UAA Release](https://bosh.io/releases/github.com/cloudfoundry/uaa-release?all=1).
-In order to configure the UAA with an IDP you can follow the documentation provided by that team available [here](https://github.com/cloudfoundry/uaa-release/blob/develop/docs/uaa.md).
+<%= vars.product_short %> uses the
+[UAA Release](https://bosh.io/releases/github.com/cloudfoundry/uaa-release?all=1) in GitHub.
 
-You will need to modify the UAA Release configuration in your `MANIFEST-FILE` that you generated in the previous step.
+To configure the UAA with an IdP (identity provider):
+
+1. Follow the
+[documentation](https://github.com/cloudfoundry/uaa-release/blob/develop/docs/uaa.md) in GitHub.
+You will need to modify the UAA Release configuration in your `MANIFEST-FILE` that you generated in
+the previous step.
 
 ### <a id="installing-devconnect-without-tas"></a> Installing <%= vars.product_short %> without <%= vars.app_runtime_abbr %>
 
-The sample manifest assumes the <%= vars.runtime_bosh %> you're deploying <%= vars.product_short %> to has <%= vars.app_runtime_abbr %> installed, but this is not necessary.
-You can complete the installation without <%= vars.app_runtime_abbr %> by following these steps:
+The sample manifest assumes the <%= vars.runtime_bosh %> you are deploying <%= vars.product_short %>
+in has <%= vars.app_runtime_abbr %> installed, but this is not necessary.
+To complete the installation without <%= vars.app_runtime_abbr %>:
 
 <!-- TODO: write instructions on how to configure a separate routing release. -->
 
 ## <a id="variables"></a> Create a Variables Configuration File
 
-The sample manifest refers to variables throughout, these need to be populated with values.
+The sample manifest refers to variables throughout that must be populated with values.
 A sample variables file exists in `manifest/sample-variables.yml`.
 You can use the sample as a template for your own configuration.
 
