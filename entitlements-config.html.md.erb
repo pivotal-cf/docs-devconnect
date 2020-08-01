@@ -5,18 +5,24 @@ owner: DevConnect
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to configure <%= vars.product_full %> entitlements to enable <%= vars.product_full %> to utilize multiple TAS instances.
+This topic describes how to configure <%= vars.product_full %> entitlements to enable <%= vars.product_full %> to use multiple TAS instances.
 
-# Overview
+## <a id="overview"></a> Overview
 
-  The entitlements config contains configuration information that devconnect uses to operate on <%= vars.app_runtime_abbr %>. It must be provided in order for DevConnect to run. Different methods of DevConnect installations may specify these properties in an environment variable, form fields or properties in a manifest yml. This page lists all the properties of entitlements config and their meaning.
+The entitlements config contains configuration information that <%= vars.product_full %> uses to operate on <%= vars.app_runtime_abbr %>.
 
-The entitlements config have the following parts
-1. [Org and Space Templates](#config-org-space)
-1. (Optional) [Custom Template Variables](#config-custom)
-1. [<%= vars.app_runtime_abbr %> Configurations](#config-tas)
+You need an entitlements config to run <%= vars.product_full %>. Different methods of <%= vars.product_full %> installations may specify these properties in an environment variable, form fields or properties in a manifest YAML file.
 
-Here is an [Example Entitlements Configuration](#example-config)
+The entitlements config have the following sections:
+
+* [Org and Space Templates](#config-org-space)
+
+* (Optional) [Custom Template Variables](#config-custom)
+
+* [<%= vars.app_runtime_abbr %> Configurations](#config-tas)
+
+For an example config file, see [Example Entitlements Configuration](#example-config).
+
 
 ## <a id="config-org-space"></a> Org and Space Templates
 
@@ -140,7 +146,7 @@ To add and configure custom templates:
       characterLimit: 10
     ```
 
-#### <a id="config-tas"></a> <%= vars.app_runtime_abbr %> Configurations
+## <a id="config-tas"></a> <%= vars.app_runtime_abbr %> Configurations
 
 You must add information for each <%= vars.app_runtime_abbr %> deployment
 you want to add to <%= vars.product_short %>.
@@ -401,42 +407,42 @@ To add and configure the `foundations` array:
 The following is a example of an entitlements configuration
 
 ```
-    orgNameTemplate: 'ORG-TEMPLATE'
-    spaceNameTemplate: 'SPACE-TEMPLATE'
-    customTemplateVariables:
-    - variableName: CUSTOM-VAR
-      displayName: CUSTOM-VAR-DISPLAY
-      displayText: CUSTOM-VAR-DISPLAY-TEXT
-      characterLimit: CHAR-LIMIT
-    foundations:
-      - name: "TAS-NAME"
-        uuid: "TAS-UUID"
-        region: "TAS-REGION"
-        apiUrl: "TAS-URL"
-      cfMgmtRepo:
-        configDir: CONFIG-DIRECTORY
-        repoUrl: REPO-SSH-URL
-        privateKey: |
-          PRIVATE-KEY
-        privateKeyPassPhrase: PASSWORD
-      oauth:
-        authorizeUrl: https://login.SYSTEM-DOMAIN/oauth/authorize
-        tokenUrl: https://login.SYSTEM-DOMAIN/oauth/token
-        clientId: AUTH-CLIENT-ID
-        clientSecret: AUTH-CLIENT-SECRET
-        issuerUrl: https://uaa.SYSTEM-DOMAIN/oauth/token
-        jwksUrl: https://login.SYSTEM-DOMAIN/token_keys
-        authenticationType: IDENTITY-PROVIDER
-      tutorialEnvironment:
-         name: sandbox
-         orgRole: auditors
-         spaceRole: developers
-         quotaName: TAS-QUOTA
-      environments:
-      - name: dev
-        orgRole: auditors
-        spaceRole: developers
-      - name: prod
-        orgRole: auditors
-        spaceRole: auditors
+orgNameTemplate: 'ORG-TEMPLATE'
+spaceNameTemplate: 'SPACE-TEMPLATE'
+customTemplateVariables:
+- variableName: CUSTOM-VAR
+  displayName: CUSTOM-VAR-DISPLAY
+  displayText: CUSTOM-VAR-DISPLAY-TEXT
+  characterLimit: CHAR-LIMIT
+foundations:
+  - name: "TAS-NAME"
+    uuid: "TAS-UUID"
+    region: "TAS-REGION"
+    apiUrl: "TAS-URL"
+  cfMgmtRepo:
+    configDir: CONFIG-DIRECTORY
+    repoUrl: REPO-SSH-URL
+    privateKey: |
+      PRIVATE-KEY
+    privateKeyPassPhrase: PASSWORD
+  oauth:
+    authorizeUrl: https://login.SYSTEM-DOMAIN/oauth/authorize
+    tokenUrl: https://login.SYSTEM-DOMAIN/oauth/token
+    clientId: AUTH-CLIENT-ID
+    clientSecret: AUTH-CLIENT-SECRET
+    issuerUrl: https://uaa.SYSTEM-DOMAIN/oauth/token
+    jwksUrl: https://login.SYSTEM-DOMAIN/token_keys
+    authenticationType: IDENTITY-PROVIDER
+  tutorialEnvironment:
+     name: sandbox
+     orgRole: auditors
+     spaceRole: developers
+     quotaName: TAS-QUOTA
+  environments:
+  - name: dev
+    orgRole: auditors
+    spaceRole: developers
+  - name: prod
+    orgRole: auditors
+    spaceRole: auditors
 ```
