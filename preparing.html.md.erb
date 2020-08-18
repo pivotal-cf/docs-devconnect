@@ -26,7 +26,9 @@ the procedures in [Installing <%= vars.product_short %> on <%= vars.app_runtime_
 
 To install <%= vars.product_short %> on Kubernetes instead,
 follow the procedure in
-[kubernetes-deployment](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment) in GitHub.
+[kubernetes-deployment](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment)
+in GitHub.
+
 
 ## <a id="prereq"></a>Prerequisites
 
@@ -36,7 +38,7 @@ Before you configure <%= vars.product_short %>, you must have the following comp
   If you are following <a href="installing-bosh-release.html">Installing Developer Connect on BOSH</a>, the components (Postgres, Routing, and UAA) are included in the BOSH release.</p>
 
 - A Postgres Database
-- A route for accessing the DevConnect server
+- A route for accessing the <%= vars.product_short %> server
 - A UAA instance
 
 You must also have:
@@ -49,6 +51,7 @@ You must also have:
   See [cf-uaac](https://github.com/cloudfoundry/cf-uaac) in GitHub.
 - One or more running <%= vars.app_runtime_abbr %> deployments managed by Cloud Foundry Management (cf-mgmt).
 See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
+
 
 ## <a id="idp"></a>Configure a <%= vars.product_short %> IdP
 
@@ -72,7 +75,8 @@ You can use the following as a <%= vars.product_short %> IdP:
   For instructions on how to create a standalone UAA instance,
   see the [Cloud Foundry documentation](https://docs.cloudfoundry.org/concepts/architecture/uaa.html#quickstart).
 
-<%# Right now this documentation assumes that you've setup a UAA or the Pivotal SSO service to work with DevConnect.
+<%# Right now this documentation assumes that you have set up a UAA or the Pivotal SSO service to
+work with DevConnect %>.
 https://www.pivotaltracker.com/story/show/168939821 asks us to document:
   * Test and document using an existing foundation UAA
   * Add section or another page on setting up SAML IDP
@@ -80,7 +84,9 @@ https://www.pivotaltracker.com/story/show/168939821 asks us to document:
 
 ### <a id="devconnect-uaa"></a> Configure the <%= vars.product_short %> UAA
    <p class="note"><strong>Note:</strong>
-   If you are installing <%= vars.product_short %> as a BOSH release, you can skip this section and go directly to <a href="#tas-uaa">Configure the <%= vars.app_runtime_abbr %> UAAs</a> as the following section is handled by the BOSH release.
+   If you are installing <%= vars.product_short %> as a BOSH release, you can skip this section and
+   go directly to the <a href="#tas-uaa">Configure the <%= vars.app_runtime_abbr %> UAAs</a> section
+   below as the BOSH release handles the following section.
    </p>
 
 To configure a UAA instance for <%= vars.product_short %>:
@@ -213,7 +219,8 @@ To create Authorization Code client credentials for <%= vars.product_short %>:
 1. Record the following values from the above command:
 <ul>
   <li>The authorization client ID.</li>
-  <li>The authorization client secret. This is secret you entered.</li>
+  <li>The authorization client secret. This is the secret you entered.</li>
 </ul>
-You use these values in [Add <%= vars.app_runtime_abbr %> Configurations](./installing-tas-vms.html#config-tas) in
-_Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
+You use these values in the
+[Add <%= vars.app_runtime_abbr %> and Database Credentials](./installing-tas-vms.html#config-creds)
+procedure.
