@@ -7,10 +7,11 @@ owner: DevConnect
 
 This topic describes how to prepare <%= vars.product_full %> for installation.
 
+
 ## <a id="Overview"></a> Overview
 
-To install <%= vars.product_short %> you must create and configure UAA clients
-to enable <%= vars.product_short %> to connect to your <%= vars.app_runtime_full %>
+To install <%= vars.product_short %> you must create and configure UAA clients to enable
+<%= vars.product_short %> to connect to your <%= vars.app_runtime_full %>
 (<%= vars.app_runtime_abbr %>) deployments.
 
 To configure <%= vars.product_short %>:
@@ -21,39 +22,43 @@ To configure <%= vars.product_short %>:
 
 
 After you prepare <%= vars.product_short %>, you can install <%= vars.product_short %> on
- <%= vars.app_runtime_abbr %> by following
-the procedures in [Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>](./installing-tas-vms.html).
+<%= vars.app_runtime_abbr %> by following the procedures in
+[Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>](./installing-tas-vms.html).
 
-To install <%= vars.product_short %> on Kubernetes instead,
-follow the procedure in
+To install <%= vars.product_short %> on Kubernetes instead, follow the procedure in
 [kubernetes-deployment](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment)
 in GitHub.
 
 
-## <a id="prereq"></a>Prerequisites
+## <a id="prereq"></a> Prerequisites
 
 Before you configure <%= vars.product_short %>, you must have the following components:
 
-  <p class="note"><strong>Note:</strong>
-  If you are following <a href="installing-bosh-release.html">Installing Developer Connect on BOSH</a>, the components (Postgres, Routing, and UAA) are included in the BOSH release.</p>
+  <p class="note">
+    <strong>Note:</strong> If you are following
+    <a href="installing-bosh-release.html">Installing Developer Connect on BOSH</a>, the components
+    Postgres, Routing, and UAA are included in the BOSH release.
+  </p>
 
 - A Postgres Database
 - A route for accessing the <%= vars.product_short %> server
 - A UAA instance
 
 You must also have:
-- A generated UUID string for each <%= vars.app_runtime_abbr %> deployment you want to configure.
+
+* A generated UUID string for each <%= vars.app_runtime_abbr %> deployment you want to configure.
   <%= vars.product_short %> uses this UUID to identify your <%= vars.app_runtime_abbr %> deployment.
-  You can create an arbitrary UUID but you must use the same value throughout the configuration. <br><br>
+  You can create an arbitrary UUID but you must use the same value throughout the configuration.
+  <br><br>
   You can use a tool such as `uuidgen` to generate random UUIDs.
   For more information, see the [man7 website](http://man7.org/linux/man-pages/man1/uuidgen.1.html).
-- The User Account and Authentication Command Line Client (UAAC).
+* The User Account and Authentication Command Line Client (UAAC).
   See [cf-uaac](https://github.com/cloudfoundry/cf-uaac) in GitHub.
-- One or more running <%= vars.app_runtime_abbr %> deployments managed by Cloud Foundry Management (cf-mgmt).
-See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
+* One or more running <%= vars.app_runtime_abbr %> deployments managed by Cloud Foundry Management
+  (cf-mgmt). See [cf-mgmt](https://github.com/vmwarepivotallabs/cf-mgmt) in GitHub.
 
 
-## <a id="idp"></a>Configure a <%= vars.product_short %> IdP
+## <a id="idp"></a> Configure a <%= vars.product_short %> IdP
 
 <%= vars.product_short %> requires an OpenID Connect (OIDC) OAuth2 provider.
 The following procedure refers to this provider as the <%= vars.product_short %> identity provider (IdP).
@@ -72,22 +77,26 @@ You can use the following as a <%= vars.product_short %> IdP:
   See [Single Sign-On for VMware Tanzu](https://docs.pivotal.io/p-identity/).
 - A UAA instance on an existing <%= vars.app_runtime_abbr %> deployment.
 - A standalone UAA instance.
-  For instructions on how to create a standalone UAA instance,
-  see the [Cloud Foundry documentation](https://docs.cloudfoundry.org/concepts/architecture/uaa.html#quickstart).
+  For instructions on how to create a standalone UAA instance, see the
+  [Cloud Foundry documentation](https://docs.cloudfoundry.org/concepts/architecture/uaa.html#quickstart).
 
 <%# Right now this documentation assumes that you have set up a UAA or the Pivotal SSO service to
-work with DevConnect %>.
+work with DevConnect .
 https://www.pivotaltracker.com/story/show/168939821 asks us to document:
-  * Test and document using an existing foundation UAA
-  * Add section or another page on setting up SAML IDP
-  * Add section for configuring Pivotal SSO Service %>
+
+* Test and document using an existing foundation UAA
+* Add section or another page on setting up SAML IDP
+* Add section for configuring Pivotal SSO Service %>
+
 
 ### <a id="devconnect-uaa"></a> Configure the <%= vars.product_short %> UAA
-   <p class="note"><strong>Note:</strong>
-   If you are installing <%= vars.product_short %> as a BOSH release, you can skip this section and
-   go directly to the <a href="#tas-uaa">Configure the <%= vars.app_runtime_abbr %> UAAs</a> section
-   below as the BOSH release handles the following section.
-   </p>
+
+<p class="note">
+  <strong>Note:</strong> If you are installing <%= vars.product_short %> as a BOSH release, you can
+  skip this section and go directly to the
+  <a href="#tas-uaa">Configure the <%= vars.app_runtime_abbr %>UAAs</a> section below as the BOSH
+  release handles the following section.
+</p>
 
 To configure a UAA instance for <%= vars.product_short %>:
 
@@ -126,14 +135,15 @@ To configure a UAA instance for <%= vars.product_short %>:
         --authorized&#95;grant&#95;types authorization&#95;code \
         --redirect&#95;uri https&#58;//my-dev-connect/oauth2 <br>
         New client secret:  *****
-        Verify new client secret:  *****</pre>
+        Verify new client secret:  *****
+    </pre>
 
 1. Record the following values from the above command:
     * The login client ID. By default, this is `devconnect_login_client`.
     * The login client secret. This is secret you entered.<br><br>
     You use these values in
-    [Add <%= vars.product_short %> and Database Credentials](./installing-tas-vms.html#config-creds) in
-    _Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
+    [Add <%= vars.product_short %> and Database Credentials](./installing-tas-vms.html#config-creds).
+
 1. Verify the authorization base URL by navigating to the following URL in a browser:
 
     ```
@@ -143,26 +153,28 @@ To configure a UAA instance for <%= vars.product_short %>:
     You can find your system domain in **<%= vars.app_runtime_abbr %>** tile
     on the **Domains** pane.
 
-1. Record the authorization base URL.
-You use this value in [Add <%= vars.product_short %> and Database Credentials](./installing-tas-vms.html#config-creds) in
-   _Installing <%= vars.product_short %> on <%= vars.app_runtime_abbr %>_.
+1. Record the authorization base URL. You use this value in
+[Add <%= vars.product_short %> and Database Credentials](./installing-tas-vms.html#config-creds).
 
-## <a id="tas-uaa"></a>Configure the <%= vars.app_runtime_abbr %> UAAs
+
+## <a id="tas-uaa"></a> Configure the <%= vars.app_runtime_abbr %> UAAs
 
 To add a <%= vars.app_runtime_abbr %> deployment to <%= vars.product_short %> you must configure
-a client with the Authorization Code grant type with the `openid` scope on the <%= vars.app_runtime_abbr %> UAA.
+a client with the Authorization Code grant type with the `openid` scope on the
+<%= vars.app_runtime_abbr %> UAA.
 
 <%= vars.product_short %> uses this grant type to:
 
   - Verify that a user exists and has the correct scopes
   - Create a user in the UAA if the user does not already exist
 
+
 ### <a id="auth-creds"></a> Configure Authorization Code Credentials
 
-<%= vars.product_short %> needs Authorization Code credentials to
-authenticate and authorize users using the <%= vars.product_short %> IdP.
-You must follow the procedure in this section for each <%= vars.app_runtime_abbr %>
-deployment you want to add to <%= vars.product_short %>.
+<%= vars.product_short %> needs Authorization Code credentials to authenticate and authorize users
+using the <%= vars.product_short %> IdP.
+You must follow the procedure in this section for each <%= vars.app_runtime_abbr %> deployment you
+want to add to <%= vars.product_short %>.
 
 To create Authorization Code client credentials for <%= vars.product_short %>:
 
@@ -185,12 +197,11 @@ To create Authorization Code client credentials for <%= vars.product_short %>:
 
     Where:
     + `TAS-ADMIN-CLIENT` is the admin client ID for your <%= vars.app_runtime_abbr %> UAA instance.
-        You can find your client ID in the **<%= vars.app_runtime_abbr %>** tile on the **Credentials** tab
-        under **UAA Admin Credentials**.
+        You can find your client ID in the **<%= vars.app_runtime_abbr %>** tile on the **Credentials**
+        tab under **UAA Admin Credentials**.
     + `TAS-ADMIN-SECRET` is the admin client secret for your <%= vars.app_runtime_abbr %> UAA instance.
-        You can find your client secret in the **<%= vars.app_runtime_abbr %>** tile on the **Credentials** tab
-        under **UAA Admin Credentials**.
-
+        You can find your client secret in the **<%= vars.app_runtime_abbr %>** tile on the
+        **Credentials** tab under **UAA Admin Credentials**.
 
 1. Register an authorization client with the Authorization Code grant type by running:
 
@@ -213,8 +224,8 @@ To create Authorization Code client credentials for <%= vars.product_short %>:
     <pre class="terminal">$ uaac client add \
         --name devconnect&#95;deployment1&#95;auth&#95;client \
         --scope openid --authorized&#95;grant&#95;types authorization&#95;code \
-        --redirect&#95;uri https://my-dev-connect/api/v1/foundations/12345678-90ab-cdef-1234-567890abcdef/oauth2</pre>
-
+        --redirect&#95;uri https://my-dev-connect/api/v1/foundations/12345678-90ab-cdef-1234-567890abcdef/oauth2
+    </pre>
 
 1. Record the following values from the above command:
 <ul>
