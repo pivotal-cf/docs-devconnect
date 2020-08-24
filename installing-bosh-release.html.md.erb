@@ -52,8 +52,7 @@ To generate the sample manifest:
 ### <a id="installing-devconnect-without-tas"></a> Register an Identity Provider with the <%= vars.product_short %> UAA
 
 <%= vars.product_short %> uses the User Account and Authentication (UAA) release. For more information, see
-[uaa Release](https://bosh.io/releases/github.com/cloudfoundry/uaa-release?all=1) in the BOSH
-documentation.
+[uaa Release](https://bosh.io/releases/github.com/cloudfoundry/uaa-release?all=1) in the BOSH documentation.
 
 To configure the UAA with an identity provider (IdP):
 
@@ -93,32 +92,32 @@ cp manifest/sample-variables.yml VARIABLES-FILE
 
 found_in_cloud_config = "can be found in the cloud config of the #{vars.bosh_runtime}."
 manifest_variables = [
- ["devconnect-auth-client-id", "A UAA authentication client with id <code>devconnect-auth-client-id</code> is automatically created. #{vars.product_short} uses this client to authenticate users with its UAA.", ""],
+ ["devconnect-auth-client-id", "A UAA authentication client with ID <code>devconnect-auth-client-id</code> is automatically created. #{vars.product_short} uses this client to authenticate users with its UAA.", ""],
  ["devconnect-auth-client-secret", "A UAA authentication client with secret <code>devconnect-auth-client-secret</code> is automatically created. #{vars.product_short} uses this client to authenticate users with its UAA.",""],
- ["devconnect-auth-base-url", "The URL of the authentication server. It should be a subdomain of your foundation app domain, such as DEVCONNECT-AUTH-SUBDOMAIN.apps.FOUNDATION-FQDN. This enables the deployment to properly register the route with the routing release.","https://devconnect-uaa.apps.redlands.cf-app.com"],
- ["devconnect-session-secret", "Arbitrary string used to encrypt session cookies",""],
- ["devconnect-server-domain", "The #{vars.product_short} server domain","<code>devconnect.{{foundation-apps-domain}}</code>"],
- ["(Optional) devconnect-server-route-port", "The #{vars.product_short} server route port. This is the port for the external application route as found in Cloud Foundry Gorouter. It defaults to 443.", ""],
- ["(Optional) devconnect-server-app-port", "The #{vars.product_short} server application port. This is the application port on the Diego Cell. It defaults to 8888.", ""],
- ["(Optional) devconnect-server-scheme", "The #{vars.product_short} server scheme (http or https). It defaults to <code>https</code>", ""],
- ["devconnect-entitlements-org-name-template", "The template that describes the name generation for orgs", ""],
- ["devconnect-entitlements-space-name-template", "The template that describes the name generation for spaces", ""],
- ["devconnect-entitlements-cf-mgmt-repos-dir", "The location into which #{vars.product_short} clones cf-mgmt configuration repositories", ""],
+ ["devconnect-auth-base-url", "The URL of the authentication server. It should be a subdomain of your foundation app domain, such as <code>DEVCONNECT-AUTH-SUBDOMAIN.apps.FOUNDATION-FQDN</code>. This enables the deployment to properly register the route with the routing release.","<code>https://devconnect-uaa.apps.redlands.cf-app.com</code>"],
+ ["devconnect-session-secret", "Arbitrary string used to encrypt session cookies.",""],
+ ["devconnect-server-domain", "The #{vars.product_short} server domain.","<code>devconnect.{{foundation-apps-domain}}</code>"],
+ ["(Optional) devconnect-server-route-port", "The #{vars.product_short} server route port. This is the port for the external application route as found in Cloud Foundry Gorouter. It defaults to <code>443</code>.", ""],
+ ["(Optional) devconnect-server-app-port", "The #{vars.product_short} server application port. This is the application port on the Diego Cell. It defaults to <code>8888</code>.", ""],
+ ["(Optional) devconnect-server-scheme", "The #{vars.product_short} server scheme, either http or https. It defaults to <code>https</code>.", ""],
+ ["devconnect-entitlements-org-name-template", "The template that describes the name generation for orgs.", ""],
+ ["devconnect-entitlements-space-name-template", "The template that describes the name generation for spaces.", ""],
+ ["devconnect-entitlements-cf-mgmt-repos-dir", "The location into which #{vars.product_short} clones <code>cf-mgmt</code> configuration repositories.", ""],
  ["devconnect-entitlements-custom-template-variables", "The list of custom variables used to construct project names.", "<a href='#sample-custom-template-variables'>See example below</a>"],
  ["devconnect-entitlements-foundations", "The list of Cloud Foundry foundations #{vars.product_short} communicates with.", "<a href='#sample-foundations'>See example below</a>"],
  ["uaa-admin-client-secret", "The admin client secret for the deployed UAA.",""],
  ["uaa-vm-type", "The VM size for the deployed UAA. VM sizes #{found_in_cloud_config}",""],
- ["postgres-vm-type", "The VM size of the deployed postgres database for #{vars.product_short}. VM sizes #{found_in_cloud_config}",""],
- ["devconnect-vm-type", "The VM size of the deployed #{vars.product_short} server. VM sizes #{found_in_cloud_config}",""],
- ["postgres-disk-type", "The persistent disk for the deployed postgres database for #{vars.product_short}. Disk sizes #{found_in_cloud_config}",""],
- ["uaa-disk-type", "The persistent disk for the deployed UAA. It brings in its own postgres database. Disk sizes #{found_in_cloud_config}",""],
+ ["postgres-vm-type", "The VM size of the deployed Postgres database for #{vars.product_short}. VM sizes #{found_in_cloud_config}.",""],
+ ["devconnect-vm-type", "The VM size of the deployed #{vars.product_short} server. VM sizes #{found_in_cloud_config.}",""],
+ ["postgres-disk-type", "The persistent disk for the deployed Postgres database for #{vars.product_short}. Disk sizes #{found_in_cloud_config}",""],
+ ["uaa-disk-type", "The persistent disk for the deployed UAA. It brings in its own Postgres database. Disk sizes #{found_in_cloud_config}",""],
  ["devconnect-vm-extension", "The <a href='https://bosh.io/docs/terminology/#vm-extension'>VM extension</a> that enables #{vars.product_short} to make outbound calls. VM extensions are in the cloud config.", "<a href='#sample-vm-extension'>See example below</a>"],
  ["network", "The network used for the BOSH deployment. Networks #{found_in_cloud_config}",""],
- ["az", "The availability zone used for the BOSH deployment. Availability zones #{found_in_cloud_config}",""],
+ ["az", "The availability zone used for the BOSH deployment. Availability zones #{found_in_cloud_config}.",""],
  ["cf-deployment", "The name of the Cloud Foundry BOSH deployment.",""],
- ["foundation-apps-domain", "The #{vars.product_short} BOSH release's foundation app subdomain where UAA and #{vars.product_short} endpoints are accessible.","For example: apps.redlands.cf-app.com"],
- ["(Optional) devconnect_server_tls_cert", "TLS certificate if setting up TLS for #{vars.product_short}. It requires a user to add the root CA certificate to CredHub.",""],
- ["(Optional) devconnect_server_tls_private_key", "TLS private key if setting up TLS for #{vars.product_short}. It requires a user to add the root CA certificate to CredHub.",""],
+ ["foundation-apps-domain", "The #{vars.product_short} BOSH release's foundation app subdomain where UAA and #{vars.product_short} endpoints are accessible.","<code>apps.redlands.cf-app.com</code>"],
+ ["(Optional) devconnect_server_tls_cert", "The TLS certificate if you are setting up TLS for #{vars.product_short}. It requires a user to add the root CA certificate to CredHub.",""],
+ ["(Optional) devconnect_server_tls_private_key", "The TLS private key if you are setting up TLS for #{vars.product_short}. It requires a user to add the root CA certificate to CredHub.",""],
 ]
 
 manifest_variables.each do | manifest_variable | %>

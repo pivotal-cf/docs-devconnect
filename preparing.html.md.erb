@@ -10,8 +10,8 @@ This topic describes how to prepare <%= vars.product_full %> for installation.
 
 ## <a id="Overview"></a> Overview
 
-To install <%= vars.product_short %> you must create and configure UAA clients to enable
-<%= vars.product_short %> to connect to your <%= vars.app_runtime_full %>
+To install <%= vars.product_short %> you must create and configure User Account and Authentication (UAA)
+clients to enable <%= vars.product_short %> to connect to your <%= vars.app_runtime_full %>
 (<%= vars.app_runtime_abbr %>) deployments.
 
 To configure <%= vars.product_short %>:
@@ -49,7 +49,7 @@ You must also have:
 * A generated UUID string for each <%= vars.app_runtime_abbr %> deployment you want to configure.
   <%= vars.product_short %> uses this UUID to identify your <%= vars.app_runtime_abbr %> deployment.
   You can create an arbitrary UUID but you must use the same value throughout the configuration.
-  <br><br>
+  <br>
   You can use a tool such as `uuidgen` to generate random UUIDs.
   For more information, see the [man7 website](http://man7.org/linux/man-pages/man1/uuidgen.1.html).
 * The User Account and Authentication Command Line Client (UAAC).
@@ -94,7 +94,7 @@ https://www.pivotaltracker.com/story/show/168939821 asks us to document:
 <p class="note">
   <strong>Note:</strong> If you are installing <%= vars.product_short %> as a BOSH release, you can
   skip this section and go directly to the
-  <a href="#tas-uaa">Configure the <%= vars.app_runtime_abbr %>UAAs</a> section below as the BOSH
+  <a href="#tas-uaa">Configure the <%= vars.app_runtime_abbr %> UAAs</a> section below as the BOSH
   release handles the following section.
 </p>
 
@@ -140,9 +140,9 @@ To configure a UAA instance for <%= vars.product_short %>:
 
 1. Record the following values from the above command:
     * The login client ID. By default, this is `devconnect_login_client`.
-    * The login client secret. This is secret you entered.<br><br>
-    You use these values in
-    [Add <%= vars.product_short %> and Database Credentials](./installing-tas-vms.html#config-creds).
+    * The login client secret. This is secret you entered.
+
+    You use these values in [Add <%= vars.product_short %> and Database Credentials](./installing-tas-vms.html#config-creds).
 
 1. Verify the authorization base URL by navigating to the following URL in a browser:
 
