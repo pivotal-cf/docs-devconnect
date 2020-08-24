@@ -22,6 +22,8 @@ To install <%= vars.product_short %> on your <%= vars.bosh_runtime %>:
 1. [Create a Variables Configuration File](#variables)
 1. [Upload and Deploy the <%= vars.product_short %> BOSH Release](#deploy)
 
+## <a id="prereq"></a> Prerequisites
+
 Before you install <%= vars.product_short %>, you must have:
 
 - Followed the procedures in [Preparing <%= vars.product_full %> for Deployment](./preparing.html).
@@ -32,7 +34,7 @@ Before you install <%= vars.product_short %>, you must have:
 
 ## <a id="manifest"></a> Create the Deployment Manifest
 
-The <%= vars.product_long %> team maintains a sample manifest that you can use as a starting point.
+The <%= vars.product_full %> team maintains a sample manifest that you can use as a starting point.
 
 To generate the sample manifest:
 
@@ -42,18 +44,18 @@ To generate the sample manifest:
 
 1. To run `ytt` on the `manifest` directory, run:
 
-```
-ytt -f manifest/ > MANIFEST-FILE
-```
+    ```
+    ytt -f manifest/ > MANIFEST-FILE
+    ```
 
 
 ### <a id="installing-devconnect-without-tas"></a> Register an Identity Provider with the <%= vars.product_short %> UAA
 
-<%= vars.product_short %> uses the UAA Release. For more information, see
-[UAA Release](https://bosh.io/releases/github.com/cloudfoundry/uaa-release?all=1) in the BOSH
+<%= vars.product_short %> uses the User Account and Authentication (UAA) release. For more information, see
+[uaa Release](https://bosh.io/releases/github.com/cloudfoundry/uaa-release?all=1) in the BOSH
 documentation.
 
-To configure the UAA with an IdP (identity provider):
+To configure the UAA with an identity provider (IdP):
 
 1. Follow the steps in the
 [documentation](https://github.com/cloudfoundry/uaa-release/blob/develop/docs/uaa.md) in GitHub.
@@ -63,7 +65,7 @@ You will need to modify the UAA Release configuration in the manifest file you g
 
 ### <a id="installing-devconnect-without-tas"></a> Installing <%= vars.product_short %> without <%= vars.app_runtime_abbr %>
 
-The sample manifest assumes the <%= vars.runtime_bosh %> you are deploying <%= vars.product_short %>
+The sample manifest assumes the <%= vars.bosh_runtime %> you are deploying <%= vars.product_short %>
 in has <%= vars.app_runtime_abbr %> installed, but this is not necessary.
 To complete the installation without <%= vars.app_runtime_abbr %>:
 
