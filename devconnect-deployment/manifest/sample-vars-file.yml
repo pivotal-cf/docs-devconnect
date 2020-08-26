@@ -1,0 +1,59 @@
+devconnect-auth-client-id: <devconnect-login-client>
+devconnect-auth-client-secret: <devconnect-login-client-secret>
+devconnect-auth-base-url: <devconnect-uaa-url>
+devconnect-session-secret: <session-secret>
+devconnect-server-domain: <devconnect-url>
+devconnect-entitlements-custom-template-variables: [
+  {
+    "variableName": "CostCenter",
+    "displayName": "Cost Center",
+    "displayText": "$$$ Please enter your cost center $$$",
+    "characterLimit": 10
+  }
+]
+devconnect-entitlements-foundations: [
+  {
+    "cfMgmtRepo": {
+    "repoUrl": "<cf-mgmt-git-repo>",
+    "privateKey": "<git-repo-private-key>",
+    },
+    "apiUrl": "<foundation api>",
+    "environments": [
+      {
+        "name": "dev",
+        "orgRole": "auditors",
+        "spaceRole": "developers"
+      }
+    ],
+    "name": "<foundation-name>",
+    "oauth": {
+      "authenticationType": "saml",
+      "authorizeUrl": "https://login.sys.<foundation-url>.com/oauth/authorize",
+      "clientId": "<auth-client>",
+      "clientSecret": "<auth-client-secret>",
+      "issuerUrl": "https://uaa.sys.<foundation-url>/oauth/token",
+      "jwksUrl": "https://login.sys.<foundation-url>/token_keys",
+      "skipSslValidation": true,
+      "tokenUrl": "https://login.sys.<foundation-url>/oauth/token"
+    },
+    "region": "us-east-1",
+    "tutorialEnvironment": {
+      "name": "sandbox",
+      "orgRole": "auditors",
+      "quotaName": "sandbox",
+      "spaceRole": "developers"
+    },
+    "uuid": "572ec69b-d5a2-4ee1-9008-d1e0bd1bb6be"
+  }
+]
+uaa-vm-type: small
+postgres-vm-type: small
+postgres-disk-type: 5120
+devconnect-vm-type: small
+devconnect-vm-extension: <vm-extension-with-internet> 
+uaa-disk-type: 5120
+network: <pas-subnet>
+az: us-central1-f
+cf-deployment: <pas-deployment-name>
+foundation-apps-domain: <foundation-apps-domain such as apps.redlands.cf-app.com>
+uaa-admin-client-secret: <generate-uaa-admin-client-secret>

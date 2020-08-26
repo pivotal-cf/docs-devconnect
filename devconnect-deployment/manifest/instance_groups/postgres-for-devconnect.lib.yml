@@ -1,0 +1,29 @@
+#@ def postgres_for_devconnect():
+name: postgres-for-devconnect
+azs:
+- ((az))
+instances: 1
+stemcell: default
+vm_type: ((postgres-vm-type))
+networks:
+- name: ((network))
+jobs:
+- name: postgres
+  properties:
+    databases:
+      port: 5524
+      address: 127.0.0.1
+      databases:
+      - citext: true
+        name: devconnect
+      roles:
+      - name: pgadmin
+        password: ((pg_for_devconnect_admin_database_password))
+        permissions:
+        - CONNECTION LIMIT 50
+  provides:
+    postgres:
+      as: postgres-database-for-devconnect
+  release: postgres
+persistent_disk_type: ((postgres-disk-type))
+#@ end

@@ -1,0 +1,42 @@
+#@ def devconnect_server():
+name: devconnect-server
+azs:
+- ((az))
+instances: 1
+vm_type: ((devconnect-vm-type))
+stemcell: default
+networks:
+- name: ((network))
+vm_extensions:
+- ((devconnect-vm-extension)) 
+lifecycle: service
+jobs:
+  - name: route_registrar
+    release: routing
+    consumes:
+      nats: {from: nats, deployment: ((cf-deployment))}
+    properties:
+      route_registrar:
+        routes:
+        - name: devconnect-route
+          port: ((devconnect-server-app-port))
+          registration_interval: 10s
+          uris:
+          - devconnect.((foundation-apps-domain))
+  - name: devconnect
+    release: DevConnect
+    consumes:
+      devconnect_database: {from: postgres-database-for-devconnect}
+    properties:
+      devconnect_auth_client_id: ((devconnect-auth-client-id))
+      devconnect_auth_client_secret: ((devconnect-auth-client-secret))
+      devconnect_auth_base_url: ((devconnect-auth-base-url))
+      devconnect_session_secret: ((devconnect-session-secret))
+      devconnect_server_domain: devconnect.((foundation-apps-domain))
+      devconnect_entitlements:
+        custom_template_variables: ((devconnect-entitlements-custom-template-variables))
+        foundations: ((devconnect-entitlements-foundations))
+  - name: bpm
+    release: bpm
+    properties: {}
+#@ end

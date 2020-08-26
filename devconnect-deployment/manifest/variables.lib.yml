@@ -1,0 +1,63 @@
+#@ def variables():
+- name: pg_for_devconnect_admin_database_password
+  type: password   
+  update_mode: converge
+- name: pg_for_uaa_admin_database_password
+  type: password   
+  update_mode: converge
+- name: uaa_encryption_key
+  type: password
+  update_mode: converge
+- name: uaa-jwt
+  type: rsa
+  update_mode: converge
+  options:
+    key_length: 4096
+- name: database-ca
+  type: certificate
+  update_mode: converge
+  options:
+    is_ca: true
+    common_name: UAA for DevConnect CA
+- name: uaa-login-saml-ca
+  type: certificate
+  update_mode: converge
+  options:
+    is_ca: true
+    common_name: UAA for DevConnect CA
+- name: database-tls
+  type: certificate
+  update_mode: converge
+  options:
+    ca: database-ca
+    common_name: localhost
+- name: uaa-login-saml
+  type: certificate
+  update_mode: converge
+  options:
+    ca: uaa-login-saml-ca
+    common_name: localhost
+- name: uaa-devconnect-ssl
+  type: certificate
+  update_mode: converge
+  options:
+    ca: /services/tls_ca
+    common_name: devconnect-uaa.((foundation-apps-domain))
+    alternative_names:
+    - devconnect-uaa.((foundation-apps-domain))
+- name: devconnect-ca
+  type: certificate
+  update_mode: converge
+  options:
+    is_ca: true
+    common_name: DevConnectCA    
+- name: devconnect-ssl
+  type: certificate
+  update_mode: converge
+  options:
+    ca: devconnect-ca
+    common_name: devconnect.((foundation-apps-domain))
+    alternative_names:
+    - devconnect.((foundation-apps-domain))
+    - localhost
+#@ end      

@@ -1,0 +1,39 @@
+#@ load("variables.lib.yml", "variables")
+name: devconnect
+
+releases:
+- name: DevConnect
+  version: latest
+- name: postgres
+  version: 41
+  url: git+https://github.com/cloudfoundry/postgres-release
+- name: uaa
+  version: 73.7.0
+  url: git+https://github.com/cloudfoundry/uaa-release
+- name: bpm 
+  version: 1.1.8
+  url: git+https://github.com/cloudfoundry/bpm-release
+- name: routing
+  version: 0.201.0
+  url: git+https://github.com/cloudfoundry/routing-release
+
+stemcells:
+- alias: default
+  os: ubuntu-xenial
+  version: latest
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  canary_watch_time: 1000-30000
+  update_watch_time: 1000-30000
+
+#@ load("instance_groups/postgres-for-devconnect.lib.yml", "postgres_for_devconnect")
+#@ load("instance_groups/uaa.lib.yml", "uaa")
+#@ load("instance_groups/devconnect-server.lib.yml", "devconnect_server")
+instance_groups: 
+- #@ postgres_for_devconnect()
+- #@ uaa()
+- #@ devconnect_server()
+
+variables: #@ variables()

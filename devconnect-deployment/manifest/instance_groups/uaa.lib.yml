@@ -1,0 +1,112 @@
+#@ def uaa():
+name: uaa
+azs:
+- ((az))
+instances: 1
+stemcell: default
+vm_type: ((uaa-vm-type))
+networks:
+- name: ((network))
+vm_extensions:
+- ((devconnect-vm-extension)) 
+persistent_disk_type: ((uaa-disk-type))
+jobs:
+  - name: route_registrar
+    release: routing
+    consumes:
+      nats: {from: nats, deployment: cf-004df336f26389a72a62}
+    properties:
+      route_registrar:
+        routes:
+        - name: uaa-route
+          server_cert_domain_san: "devconnect-uaa.((foundation-apps-domain))"
+          tls_port: 8443
+          registration_interval: 10s
+          uris:
+          - devconnect-uaa.((foundation-apps-domain))
+  - name: postgres
+    release: postgres
+    properties:
+      databases:
+        port: 5525
+        address: 127.0.0.1
+        databases:
+        - name: uaa
+        roles:
+        - name: admin
+          password: ((pg_for_uaa_admin_database_password))
+        tls: 
+          ca: ((database-tls.ca))
+          certificate: ((database-tls.certificate))
+          private_key: ((database-tls.private_key))
+  - name: uaa
+    release: uaa
+    consumes:
+      database:
+        from: postgres
+    properties:
+      uaa:
+        sslCertificate: ((uaa-devconnect-ssl.certificate))
+        sslPrivateKey: ((uaa-devconnect-ssl.private_key))
+        url: https://devconnect-uaa.((foundation-apps-domain))
+        catalina_opts: -Djava.security.egd=file:/dev/./urandom -Xmx768m -XX:MaxMetaspaceSize=256m
+        logging_level: INFO
+        scim:
+        clients:
+          ((devconnect-auth-client-id)):
+            override: true
+            authorized-grant-types: authorization_code,refresh_token
+            scope: openid,profile
+            redirect-uri: ((devconnect-server-scheme))://devconnect.((foundation-apps-domain)):((devconnect-server-route-port))/oauth2
+            secret: ((devconnect-auth-client-secret)) 
+        admin: {client_secret: ((uaa-admin-client-secret))}
+        ca_certs:
+          - ((database-tls.ca))
+        jwt:
+          revocable: true
+          policy:
+            active_key_id: key-1
+            keys:
+              key-1:
+                signingKey: ((uaa-jwt.private_key))
+      encryption:
+        active_key_label: 'key-1' #! this key matches jwt.policy.active_key_id
+        encryption_keys:
+          - label: 'key-1'
+            passphrase: "((uaa_encryption_key))"
+      uaadb:
+        address: 127.0.0.1
+        port: 5525
+        tls: disabled
+        db_scheme: postgresql
+        databases:
+        - tag: uaa
+          name: uaa
+        roles:
+        - tag: admin
+          name: admin
+          password: ((pg_for_uaa_admin_database_password))
+      login:
+        saml:
+          activeKeyId: key-1
+          keys:
+            key-1:
+              certificate: ((uaa-login-saml-ca.certificate))
+              key: ((uaa-login-saml-ca.private_key))
+              passphrase: ""
+        #! Add the following section if you would like to configure your uaa with an idp
+        #! https://github.com/cloudfoundry/uaa-release/blob/develop/docs/uaa.md
+        #! providers:
+        #!   <idp-name e.g. okta>:
+        #!     assertionConsumerIndex: 0
+        #!     idpMetadata: <ipd's metadata config e.g. https://<dev okta>.okta.com/app/<app-id>/sso/saml/metadata
+        #!     linkText: Login with Okta
+        #!     nameID: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+        #!     override: false
+        #!     showSamlLoginLink: true
+        #!     signMetaData: true
+        #!     signRequest: true
+  - name: bpm
+    release: bpm
+    properties: {}
+#@ end
