@@ -40,12 +40,12 @@ To generate the sample manifest:
 
 1. Download [YTT](https://get-ytt.io/).
 
-1. Clone the [<%= vars.product_short %> Deployment Repository](https://github.com/pivotal/devconnect-deployment).
+1. Clone the [<%= vars.product_short %> Documentation Repository](https://github.com/pivotal-cf/docs-devconnect).
 
 1. To run `ytt` on the `manifest` directory, run:
 
     ```
-    ytt -f manifest/ > MANIFEST-FILE
+    ytt -f devconnect-deployment/manifest/ > MANIFEST-FILE
     ```
 
 
@@ -77,7 +77,7 @@ To create a variables configuration file:
 1. Copy the sample manifest file by running:
 
 ```
-cp manifest/sample-variables.yml VARIABLES-FILE
+cp devconnect-deployment/manifest/sample-variables.yml VARIABLES-FILE
 ```
 
 1. Replace the variable values in the manifest with your own.
