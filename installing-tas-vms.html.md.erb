@@ -5,17 +5,19 @@ owner: DevConnect
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to install <%= vars.product_full %> on <%= vars.app_runtime_full %> (<%= vars.app_runtime_abbr %>).
+This topic describes how to install <%= vars.product_full %> on <%= vars.app_runtime_full %>
+(<%= vars.app_runtime_abbr %>).
 
 ## <a id="Overview"></a> Overview
 
 To install <%= vars.product_short %> on <%= vars.app_runtime_abbr %>
 you must configure an app manifest and variable file for <%= vars.product_short %>.
-After you configure the files, you must push the <%= vars.product_short %> app to <%= vars.app_runtime_abbr %>.
+After you configure the files, you must push the <%= vars.product_short %> app to
+<%= vars.app_runtime_abbr %>.
 
-To install <%= vars.product_short %> on Kubernetes instead,
-follow the procedure in
-[kubernetes-deployment](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment) in GitHub.
+To install <%= vars.product_short %> on Kubernetes instead, follow the procedure in
+[kubernetes-deployment](https://github.com/pivotal/DevConnect/blob/master/kubernetes-deployment) in
+GitHub.
 
 To install <%= vars.product_short %> on <%= vars.app_runtime_abbr %>:
 
@@ -37,7 +39,7 @@ Before you install <%= vars.product_short %>, you must have:
 
 <%# The following is our speculation on how Alana will deploy DevConnect.
 It should be updated after this story, https://www.pivotaltracker.com/story/show/168938874
-to reflect how to actually deploy the packaged DevConnect.  %>
+to reflect how to actually deploy the packaged DevConnect. %>
 
 You must create an app manifest file to `cf push` the <%= vars.product_short %> app.<br><br>
 To create the manifest file:
@@ -227,7 +229,8 @@ To create and configure the `devconnect-entitlements-config` key:
     ```
     devconnect-entitlements-config: |
     ```
-1. See [Entitlments Config](./entitlements-config.html) to populate the `devconnect-entitlements-config` key.
+1. See [Entitlements Config](./entitlements-config.html) to populate the
+`devconnect-entitlements-config` key.
 
 ### <a id="example-config"></a> Example Configuration File
 
