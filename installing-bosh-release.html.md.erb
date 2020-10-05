@@ -40,29 +40,34 @@ To generate the sample manifest:
 
 1. Download [YTT](https://get-ytt.io/).
 
-1. Clone the [<%= vars.product_short %> Documentation Repository](https://github.com/pivotal-cf/docs-devconnect).
+1. Clone the
+[<%= vars.product_short %> Documentation Repository](https://github.com/pivotal-cf/docs-devconnect)
+in GitHub.
 
-1. To run `ytt` on the `manifest` directory, run:
+1. Run `ytt` on the `manifest` directory:
 
     ```
     ytt -f devconnect-deployment/manifest/ > MANIFEST-FILE
     ```
 
 
-### <a id="installing-devconnect-without-tas"></a> Register an Identity Provider with the <%= vars.product_short %> UAA
+### <a id="installing-devconnect-without-tas"></a> Register an Identity Provider with the
+<%= vars.product_short %> UAA
 
-<%= vars.product_short %> uses the User Account and Authentication (UAA) release. For more information, see
+<%= vars.product_short %> uses the User Account and Authentication (UAA) release.
+For more information, see
 [uaa Release](https://bosh.io/releases/github.com/cloudfoundry/uaa-release?all=1) in the BOSH documentation.
 
 To configure the UAA with an identity provider (IdP):
 
 1. Follow the steps in
 [uaa](https://github.com/cloudfoundry/uaa-release/blob/develop/docs/uaa.md) in GitHub.
-You will need to modify the UAA Release configuration in the manifest file you generated in the
+You need to modify the UAA Release configuration in the manifest file you generated in the
 [Create the Deployment Manifest](#manifest) procedure above.
 
 
-### <a id="installing-devconnect-without-tas"></a> Installing <%= vars.product_short %> without <%= vars.app_runtime_abbr %>
+### <a id="installing-devconnect-without-tas"></a> Installing <%= vars.product_short %> without
+<%= vars.app_runtime_abbr %>
 
 The sample manifest assumes the <%= vars.bosh_runtime %> you are deploying <%= vars.product_short %>
 in has <%= vars.app_runtime_abbr %> installed, but this is not necessary.
@@ -131,7 +136,8 @@ manifest_variables.each do | manifest_variable | %>
 <% end %>
 </table>
 
-###<a id="sample-custom-template-variables"></a> Sample Custom Template Variables
+
+### <a id="sample-custom-template-variables"></a> Sample Custom Template Variables
 
 ```
 [
@@ -145,7 +151,7 @@ manifest_variables.each do | manifest_variable | %>
 ```
 
 
-###<a id="sample-foundations"></a> Sample Foundations
+### <a id="sample-foundations"></a> Sample Foundations
 
 ```
 [
@@ -186,7 +192,7 @@ manifest_variables.each do | manifest_variable | %>
 ```
 
 
-###<a id="sample-vm-extension"></a> Sample VM Extension
+### <a id="sample-vm-extension"></a> Sample VM Extension
 
 ```
 - cloud_properties:
