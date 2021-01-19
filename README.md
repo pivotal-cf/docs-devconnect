@@ -1,15 +1,10 @@
 # Developer Connect
 
+**Note:** This documentation repo is currently not in use. This repo will only be used if development continues on the Developer Connect product.
+
 ## Where is the book repo?
 https://github.com/pivotal-cf/docs-book-devconnect
-
-The book repo uses these branches:
-
-* **edge** builds from the **master** content branch in this repo.
-Pipeline [here]().
-
-* **master** builds from the published content branches in this repo.
-Pipeline [here](https://concourse.run.pivotal.io/teams/cf-docs/pipelines/cf-services?group=devconnect).
+ 
 
 ## Branches in this (content) repo
 
@@ -23,7 +18,7 @@ Always make changes you want carried forward in the master branch. This includes
 
 | Branch Name| Use for… |
 |------------| ---------|
-| master (current work)    | v0.1 (staged here: http://docs-pcf-staging.cfapps.io/developer-connect/0-alpha/|
+| master (current work)    | v0.1 (there is no staging URL) |
 
 When the latest alpha version is ready to publish, merge the master branch into an alpha branch.
 Keep all the alpha versions of the release notes stacked in the [Release Notes for Pivotal Developer Connect](http://docs-pcf-staging.cfapps.io/developer-connect/0-n/release-notes.html) page.
@@ -41,10 +36,12 @@ We need to decide on product name short forms:
 
 ## Pipelines
 
+There are currently no pipelines for this repo. 
+
 [//]: # "**Edge Pipeline**<br>
 The `master` branch builds to the <br> <strong>cf-services-edge > developer-connect-edge</strong> pipeline, and does not go to production until release time: [Edge pipeline](). <br>"
 
-**Production Pipeline**<br>
+[//]: **Production Pipeline**<br>
 All live branches build to the <strong>cf-services > developer-connnect</strong> pipeline,
 and are manually pushed to production as needed: [Production pipeline](https://concourse.run.pivotal.io/teams/cf-docs/pipelines/cf-services?group=devconnect).
 
