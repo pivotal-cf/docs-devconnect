@@ -41,9 +41,9 @@ There are currently no pipelines for this repo.
 [//]: # "**Edge Pipeline**<br>
 The `master` branch builds to the <br> <strong>cf-services-edge > developer-connect-edge</strong> pipeline, and does not go to production until release time: [Edge pipeline](). <br>"
 
-[//]: **Production Pipeline**<br>
+[//]: # "**Production Pipeline**<br>
 All live branches build to the <strong>cf-services > developer-connnect</strong> pipeline,
-and are manually pushed to production as needed: [Production pipeline](https://concourse.run.pivotal.io/teams/cf-docs/pipelines/cf-services?group=devconnect).
+and are manually pushed to production as needed: [Production pipeline](https://concourse.run.pivotal.io/teams/cf-docs/pipelines/cf-services?group=devconnect)."
 
 ## How to Cherry-Pick from one Branch to Another
 1. Make changes in the first branch (usually `master`), commit them, and then push them to the repo.
